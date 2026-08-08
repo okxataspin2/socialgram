@@ -2,7 +2,7 @@
 library;
 
 export 'package:flutter_image_compress/flutter_image_compress.dart';
-export 'package:image_picker_plus/image_picker_plus.dart' hide AppTheme;
+// image_picker_plus is only imported by the native picker (image_picker_io.dart)
 export 'package:insta_blocks/insta_blocks.dart';
 
 export 'src/config/config.dart';

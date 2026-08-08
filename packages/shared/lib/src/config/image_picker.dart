@@ -1,159 +1,63 @@
 // ignore_for_file: public_member_api_docs
 
-import 'dart:io';
+import 'package:flutter/widgets.dart';
 
-import 'package:app_ui/app_ui.dart' hide AppTheme;
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker_plus/image_picker_plus.dart';
-import 'package:shared/shared.dart';
+import 'image_picker_io.dart' if (dart.library.html) 'image_picker_web.dart'
+    as impl;
+import 'picked_media.dart';
 
-export 'package:image_picker_plus/src/images_view_page.dart';
+export 'picked_media.dart';
 
+/// Unified media picker.
+///
+/// On native platforms this wraps the device gallery/camera picker
+/// (`image_picker_plus`); on web it uses `file_picker`. Returns platform
+/// neutral [PickedMedia] results so the rest of the app is platform agnostic.
 class PickImage {
   factory PickImage() => _internal;
 
-  /// {@macro image_picker}
   PickImage._();
 
   static final PickImage _internal = PickImage._();
 
-  late TabsTexts _tabsTexts;
+  final impl.PickerPlatform _platform = impl.buildPickerPlatform();
 
-  // ignore: use_setters_to_change_properties
-  void init({TabsTexts? tabsTexts}) {
-    _tabsTexts = tabsTexts ?? const TabsTexts();
-  }
+  Future<void> init() => _platform.init();
 
-  static final _defaultFilterOption = FilterOptionGroup(
-    videoOption: FilterOption(
-      durationConstraint: DurationConstraint(max: 3.minutes),
-    ),
-  );
-
-  AppTheme _appTheme(BuildContext context) => AppTheme(
-    primaryColor: AppColors.blue,
-    surfaceColor: context.customAdaptiveColor(
-      light: AppColors.white,
-      dark: AppColors.black,
-    ),
-    onSurfaceColor: context.customAdaptiveColor(
-      light: AppColors.black,
-      dark: AppColors.white,
-    ),
-    primaryContainerColor: AppColors.deepBlue,
-    shimmerBaseColor: const Color(0xff2d2f2f),
-    shimmerHighlightColor: const Color(0xff13151b),
-  );
-
-  SliverGridDelegateWithFixedCrossAxisCount _sliverGridDelegate() =>
-      const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        crossAxisSpacing: 1.7,
-        mainAxisSpacing: 1.5,
-      );
-
-  Future<void> pickImagesAndVideos(
-    BuildContext context, {
-    required Future<void> Function(
-      BuildContext context,
-      SelectedImagesDetails,
-    )
-    onMediaPicked,
-    bool cropImage = true,
-    bool showPreview = true,
-    int maxSelection = 10,
-    bool multiSelection = true,
-  }) => context.pickBoth(
-    source: ImageSource.both,
-    multiSelection: multiSelection,
-    filterOption: _defaultFilterOption,
-    galleryDisplaySettings: GalleryDisplaySettings(
-      maximumSelection: maxSelection,
-      showImagePreview: showPreview,
-      cropImage: cropImage,
-      tabsTexts: _tabsTexts,
-      appTheme: _appTheme(context),
-      callbackFunction: (details) => onMediaPicked.call(context, details),
-    ),
-  );
-
-  Future<SelectedImagesDetails?> pickImage(
-    BuildContext context, {
-    ImageSource source = ImageSource.gallery,
-    int maxSelection = 1,
-    bool cropImage = true,
-    bool multiImages = false,
-    bool showPreview = true,
-    bool pickAvatar = false,
-  }) => context.pickImage(
-    source: source,
-    multiImages: multiImages,
-    filterOption: _defaultFilterOption,
-    galleryDisplaySettings: GalleryDisplaySettings(
-      cropImage: cropImage,
-      maximumSelection: maxSelection,
-      showImagePreview: showPreview,
-      tabsTexts: _tabsTexts,
-      pickAvatar: pickAvatar,
-      appTheme: _appTheme(context),
-      gridDelegate: _sliverGridDelegate(),
-    ),
-  );
-
-  Future<void> pickVideo(
-    BuildContext context, {
-    required Future<void> Function(
-      BuildContext context,
-      SelectedImagesDetails,
-    )
-    onMediaPicked,
-    ImageSource source = ImageSource.both,
-    int maxSelection = 10,
-    bool cropImage = true,
-    bool multiImages = false,
-    bool showPreview = true,
-  }) => context.pickVideo(
-    source: source,
-    filterOption: _defaultFilterOption,
-    galleryDisplaySettings: GalleryDisplaySettings(
-      showImagePreview: showPreview,
-      cropImage: cropImage,
-      maximumSelection: maxSelection,
-      tabsTexts: _tabsTexts,
-      appTheme: _appTheme(context),
-      callbackFunction: (details) => onMediaPicked.call(context, details),
-    ),
-  );
-
-  Widget customMediaPicker({
+  /// Picks a single media file.
+  Future<PickedMedia?> pickMedia({
     required BuildContext context,
-    required ImageSource source,
-    required PickerSource pickerSource,
-    required ValueSetter<SelectedImagesDetails> onMediaPicked,
-    Key? key,
-    bool multiSelection = true,
-    FilterOptionGroup? filterOption,
-    VoidCallback? onBackButtonTap,
-    bool wantKeepAlive = true,
-  }) => CustomImagePicker(
-    key: key,
-    galleryDisplaySettings: GalleryDisplaySettings(
-      showImagePreview: true,
-      cropImage: true,
-      tabsTexts: _tabsTexts,
-      appTheme: _appTheme(context),
-      callbackFunction: (details) async => onMediaPicked.call(details),
-    ),
-    wantKeepAlive: wantKeepAlive,
-    multiSelection: multiSelection,
-    pickerSource: pickerSource,
+    PickedMediaSource source = PickedMediaSource.gallery,
+    bool pickAvatar = false,
+  }) => _platform.pickMedia(
+    context: context,
     source: source,
-    filterOption: _defaultFilterOption,
-    onBackButtonTap: onBackButtonTap,
+    pickAvatar: pickAvatar,
   );
 
-  /// Reads image as bytes.
-  Future<Uint8List> imageBytes({required File file}) =>
-      compute((file) => file.readAsBytes(), file);
+  /// Picks one or more media files.
+  Future<List<PickedMedia>?> pickMedias({
+    required BuildContext context,
+    bool multiSelection = true,
+    PickedMediaSource source = PickedMediaSource.both,
+    int maxSelection = 10,
+  }) => _platform.pickMedias(
+    context: context,
+    multiSelection: multiSelection,
+    source: source,
+    maxSelection: maxSelection,
+  );
+
+  /// A widget that embeds the media picker (used by the post composer).
+  Widget mediaPicker({
+    required BuildContext context,
+    required ValueSetter<List<PickedMedia>> onMediaPicked,
+    bool multiSelection = true,
+    PickedMediaSource source = PickedMediaSource.both,
+  }) => _platform.mediaPicker(
+    context: context,
+    onMediaPicked: onMediaPicked,
+    multiSelection: multiSelection,
+    source: source,
+  );
 }

@@ -1,7 +1,8 @@
 // ignore_for_file: comment_references
 
-import 'dart:io' show File;
 import 'dart:typed_data';
+
+import 'package:cross_file/cross_file.dart' show XFile;
 
 import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -175,7 +176,7 @@ class LocalImageAttachment extends StatelessWidget {
 
   final AttachmentFile? file;
   final Uint8List? bytes;
-  final File? imageFile;
+  final XFile? imageFile;
   final double? width;
   final double? height;
   final int? cacheWidth;
@@ -189,7 +190,7 @@ class LocalImageAttachment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bytes = this.bytes ?? imageFile?.readAsBytesSync() ?? file?.bytes;
+    final bytes = this.bytes ?? file?.bytes;
     if (bytes != null) {
       return CachedMemoryImage(
         uniqueKey: 'app://content/image/${file?.path}/${uuid.v4()}',
@@ -212,15 +213,18 @@ class LocalImageAttachment extends StatelessWidget {
       );
     }
 
-    final path = imageFile?.path ?? file?.path;
+    final path = imageFile ?? (file?.path == null ? null : XFile(file!.path!));
     if (path != null) {
-      return Image.file(
-        File(path),
+      return AsyncLocalImageAttachment(
+        imageFile: path,
+        fit: fit,
         width: width,
         height: height,
-        cacheHeight: height?.toInt(),
-        cacheWidth: width?.toInt(),
-        fit: fit,
+        cacheWidth: cacheWidth,
+        cacheHeight: cacheHeight,
+        borderRadius: borderRadius,
+        filterQuality: filterQuality,
+        errorBuilder: errorBuilder,
       );
     }
 
@@ -232,6 +236,59 @@ class LocalImageAttachment extends StatelessWidget {
       height: height,
       width: width,
       borderRadius: borderRadius,
+    );
+  }
+}
+
+class AsyncLocalImageAttachment extends StatelessWidget {
+  const AsyncLocalImageAttachment({
+    required this.imageFile,
+    required this.fit,
+    required this.width,
+    required this.height,
+    required this.cacheWidth,
+    required this.cacheHeight,
+    required this.borderRadius,
+    required this.filterQuality,
+    required this.errorBuilder,
+    super.key,
+  });
+
+  final XFile imageFile;
+  final double? width;
+  final double? height;
+  final int? cacheWidth;
+  final int? cacheHeight;
+  final double? borderRadius;
+  final BoxFit? fit;
+  final FilterQuality filterQuality;
+  final ThumbnailErrorBuilder errorBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Uint8List>(
+      future: imageFile.readAsBytes(),
+      builder: (context, snapshot) {
+        final bytes = snapshot.data;
+        if (bytes == null) {
+          return ShimmerPlaceholder(
+            height: height,
+            width: width,
+            borderRadius: borderRadius,
+          );
+        }
+        return CachedMemoryImage(
+          uniqueKey: 'app://content/image/${imageFile.name}/${uuid.v4()}',
+          fit: fit,
+          bytes: bytes,
+          height: height,
+          width: width,
+          cacheHeight: cacheHeight,
+          cacheWidth: cacheWidth,
+          errorBuilder: errorBuilder,
+          filterQuality: filterQuality,
+        );
+      },
     );
   }
 }

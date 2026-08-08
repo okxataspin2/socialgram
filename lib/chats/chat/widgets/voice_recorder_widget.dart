@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
@@ -92,7 +91,6 @@ class _VoiceRecorderWidgetState extends State<VoiceRecorderWidget>
         throw Exception('No recording found');
       }
 
-      final file = File(path);
       final fileName = 'voice_${uuid.v4()}.m4a';
 
       toggleLoadingIndeterminate();
@@ -100,7 +98,7 @@ class _VoiceRecorderWidgetState extends State<VoiceRecorderWidget>
       final voiceUrl = await _voiceService.uploadVoiceMessage(
         chatId: widget.chatId,
         fileName: fileName,
-        file: file,
+        path: path,
       );
 
       if (!mounted) return;

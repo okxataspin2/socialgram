@@ -1,9 +1,9 @@
-import 'dart:io';
-
 import 'package:app_ui/app_ui.dart';
+import 'package:cross_file/cross_file.dart' show XFile;
 import 'package:flutter/material.dart';
 import 'package:instagram_blocks_ui/instagram_blocks_ui.dart';
 import 'package:instagram_blocks_ui/src/blur_hash_image_placeholder.dart';
+import 'package:instagram_blocks_ui/src/playback/video_player_platform.dart';
 import 'package:shared/shared.dart';
 
 class InlineVideo extends StatefulWidget {
@@ -48,16 +48,24 @@ class _InlineVideoState extends State<InlineVideo>
   void _initializeController() {
     if (videoSettings.videoPlayerController != null) {
       _controller = videoSettings.videoPlayerController!;
+    } else if (videoSettings.videoFile != null) {
+      controllerForVideoFile(
+        videoSettings.videoFile,
+        videoPlayerOptions: videoSettings.videoPlayerOptions,
+      ).then((controller) {
+        _controller = controller;
+        _controller.initialize().then((_) async {
+          safeSetState(() {});
+          _togglePlayer();
+          _toggleSound();
+        });
+      });
+      return;
     } else {
-      _controller = videoSettings.videoFile != null
-          ? VideoPlayerController.file(
-              videoSettings.videoFile!,
-              videoPlayerOptions: videoSettings.videoPlayerOptions,
-            )
-          : VideoPlayerController.networkUrl(
-              Uri.parse(videoSettings.videoUrl!),
-              videoPlayerOptions: videoSettings.videoPlayerOptions,
-            );
+      _controller = VideoPlayerController.networkUrl(
+        Uri.parse(videoSettings.videoUrl!),
+        videoPlayerOptions: videoSettings.videoPlayerOptions,
+      );
     }
     _controller.initialize().then((_) async {
       safeSetState(() {});
@@ -361,7 +369,7 @@ class VideoSettings {
     required bool shouldPlay,
     String? id,
     String? videoUrl,
-    File? videoFile,
+    XFile? videoFile,
     String? blurHash,
     double? aspectRatio,
     bool? shouldExpand,
@@ -421,7 +429,7 @@ class VideoSettings {
 
   final String? id;
   final String? videoUrl;
-  final File? videoFile;
+  final XFile? videoFile;
   final String? blurHash;
   final double aspectRatio;
   final bool shouldExpand;

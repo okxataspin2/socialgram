@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:bloc/bloc.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_remote_config_repository/firebase_remote_config_repository.dart';
 import 'package:flutter/material.dart';
@@ -61,15 +60,18 @@ class CreateStoriesBloc extends Bloc<CreateStoriesEvent, CreateStoriesState> {
       event.onLoading?.call();
 
       final storyId = uuid.v4();
-      final storyImageFile = File(event.filePath);
-      final compressed = await ImageCompress.compressFile(storyImageFile);
-      final compressedFile = File(compressed!.path);
-      final compressedBytes = await PickImage().imageBytes(
-        file: compressedFile,
-      );
+      final storyImageFile = XFile(event.filePath);
+      XFile compressedFile;
+      if (kIsWeb) {
+        compressedFile = storyImageFile;
+      } else {
+        final compressed = await ImageCompress.compressFile(storyImageFile);
+        compressedFile = compressed ?? storyImageFile;
+      }
+      final compressedBytes = await compressedFile.readAsBytes();
       final contentUrl = await _storiesRepository.uploadStoryMedia(
         storyId: storyId,
-        imageFile: compressedFile,
+        fileName: compressedFile.name,
         imageBytes: compressedBytes,
       );
 

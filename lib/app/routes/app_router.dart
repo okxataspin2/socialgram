@@ -22,7 +22,6 @@ import 'package:flutter_instagram_offline_first_clone/user_profile/user_profile.
 import 'package:go_router/go_router.dart';
 import 'package:posts_repository/posts_repository.dart';
 import 'package:shared/shared.dart' hide FeedPage, ReelsPage;
-import 'package:stories_editor/stories_editor.dart';
 import 'package:stories_repository/stories_repository.dart';
 import 'package:user_repository/user_repository.dart';
 

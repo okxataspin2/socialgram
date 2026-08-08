@@ -1,25 +1,21 @@
-import 'dart:io';
-import 'dart:typed_data';
+/// Platform-neutral facade for video helpers (compress + thumbnail).
+///
+/// Native implementation lives in `video_plus_io.dart`; web is a no-op stub
+/// (`video_plus_web.dart`). Official video editing is not supported in the
+/// browser build yet.
+library;
 
-import 'package:video_compress/video_compress.dart';
+import 'video_plus_io.dart' if (dart.library.html) 'video_plus_web.dart'
+    as impl;
 
-/// {@template video_thumbnail_plus}
-/// A package that manages video thumbnail.
-/// {@endtemplate}
+export 'video_plus_io.dart' if (dart.library.html) 'video_plus_web.dart';
+
+/// Video processing helpers.
 class VideoPlus {
   const VideoPlus._();
 
-  /// Returns a [Uint8List] containing the thumbnail of the video.
-  static Future<Uint8List?> getVideoThumbnail(File video) =>
-      VideoCompress.getByteThumbnail(video.path);
+  static Future<Uint8List?> getVideoThumbnail(dynamic file) =>
+      impl.getVideoThumbnail(file);
 
-  /// Compresses the video.
-  static Future<MediaInfo?> compressVideo(File video) async {
-    await VideoCompress.setLogLevel(0);
-
-    return VideoCompress.compressVideo(
-      video.path,
-      includeAudio: true,
-    );
-  }
+  static Future<dynamic> compressVideo(dynamic file) => impl.compressVideo(file);
 }

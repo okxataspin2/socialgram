@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:bloc/bloc.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:equatable/equatable.dart';
 import 'package:form_fields/form_fields.dart';
 import 'package:notifications_repository/notifications_repository.dart';
@@ -150,7 +149,7 @@ class SignUpCubit extends Cubit<SignupState> {
 
   /// Defines method to submit form. It is used to check if all inputs are valid
   /// and if so, it is used to signup user.
-  Future<void> onSubmit({File? avatarFile}) async {
+  Future<void> onSubmit({XFile? avatarFile}) async {
     final email = Email.dirty(state.email.value);
     final password = Password.dirty(state.password.value);
     final fullName = FullName.dirty(state.fullName.value);
@@ -177,12 +176,10 @@ class SignUpCubit extends Cubit<SignupState> {
     try {
       String? imageUrlResponse;
       if (avatarFile != null) {
-        final imageBytes = await PickImage().imageBytes(
-          file: File(avatarFile.path),
-        );
+        final imageBytes = await avatarFile.readAsBytes();
         final avatarsStorage = Supabase.instance.client.storage.from('avatars');
 
-        final fileExt = avatarFile.path.split('.').last.toLowerCase();
+        final fileExt = avatarFile.name.split('.').last.toLowerCase();
         final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
         final filePath = fileName;
         await avatarsStorage.uploadBinary(

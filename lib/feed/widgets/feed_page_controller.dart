@@ -54,13 +54,13 @@ class FeedPageController extends ChangeNotifier {
   );
 
   Future<void> processPostMedia({
-    required List<SelectedByte> selectedFiles,
+    required List<PickedMedia> picked,
     required String postId,
     required String caption,
     required bool pickVideo,
   }) async {
     final isReel =
-        selectedFiles.length == 1 && selectedFiles.every((e) => !e.isThatImage);
+        picked.length == 1 && picked.every((e) => e.isVideo);
     final navigateToReelPage = isReel;
     StatefulNavigationShell.of(
       _context,
@@ -69,7 +69,7 @@ class FeedPageController extends ChangeNotifier {
       VideoPlayerInheritedWidget.of(_context).videoPlayerState.playReels();
     }
 
-    late final postId = uuid.v4();
+    late final storage = Supabase.instance.client.storage.from('posts');
 
     void uploadPost({required List<Map<String, dynamic>> media}) =>
         _context.read<FeedBloc>().add(
@@ -80,36 +80,37 @@ class FeedPageController extends ChangeNotifier {
           ),
         );
 
-    late final storage = Supabase.instance.client.storage.from('posts');
+    String extensionOf(PickedMedia media) {
+      final name = media.fileName.toLowerCase();
+      final dot = name.lastIndexOf('.');
+      return dot == -1 ? (media.isVideo ? 'mp4' : 'jpg') : name.substring(dot + 1);
+    }
 
     if (isReel) {
       try {
+        final video = picked.first;
         final mediaPath = '$postId/video_0';
+        final mediaExtension = extensionOf(video);
 
-        final selectedFile = selectedFiles.first;
-        final firstFrame = await VideoPlus.getVideoThumbnail(
-          selectedFile.selectedFile,
-        );
+        Uint8List bytes = await video.readBytes();
+        Uint8List? firstFrame;
+        if (!kIsWeb) {
+          firstFrame = await VideoPlus.getVideoThumbnail(video.file);
+          final compressedVideo =
+              (await VideoPlus.compressVideo(video.file))?.file;
+          if (compressedVideo != null) {
+            bytes = await compressedVideo.readAsBytes();
+          }
+        }
         final blurHash = firstFrame == null
             ? ''
             : await BlurHashPlus.blurHashEncode(firstFrame);
-        final compressedVideo =
-            (await VideoPlus.compressVideo(selectedFile.selectedFile))?.file ??
-            selectedFile.selectedFile;
-        final compressedVideoBytes = await PickImage().imageBytes(
-          file: compressedVideo,
-        );
-        final attachment = AttachmentFile(
-          size: compressedVideoBytes.length,
-          bytes: compressedVideoBytes,
-          path: compressedVideo.path,
-        );
 
         await storage.uploadBinary(
           mediaPath,
-          attachment.bytes!,
+          bytes,
           fileOptions: FileOptions(
-            contentType: attachment.mediaType!.mimeType,
+            contentType: 'video/$mediaExtension',
             cacheControl: '9000000',
           ),
         );
@@ -121,7 +122,7 @@ class FeedPageController extends ChangeNotifier {
             firstFramePath,
             firstFrame,
             fileOptions: FileOptions(
-              contentType: attachment.mediaType!.mimeType,
+              contentType: 'video/$mediaExtension',
               cacheControl: '9000000',
             ),
           );
@@ -142,46 +143,49 @@ class FeedPageController extends ChangeNotifier {
       }
     } else {
       final media = <Map<String, dynamic>>[];
-      for (var i = 0; i < selectedFiles.length; i++) {
-        late final selectedByte = selectedFiles[i].selectedByte;
-        late final selectedFile = selectedFiles[i].selectedFile;
-        late final isVideo = selectedFile.isVideo;
+      for (var i = 0; i < picked.length; i++) {
+        final current = picked[i];
+        final isVideo = current.isVideo;
+        final bytes = await current.readBytes();
         String blurHash;
         Uint8List? convertedBytes;
         if (isVideo) {
-          convertedBytes = await VideoPlus.getVideoThumbnail(selectedFile);
+          convertedBytes = kIsWeb ? null : await VideoPlus.getVideoThumbnail(current.file);
           blurHash = convertedBytes == null
               ? ''
               : await BlurHashPlus.blurHashEncode(convertedBytes);
         } else {
-          blurHash = await BlurHashPlus.blurHashEncode(selectedByte);
+          blurHash = await BlurHashPlus.blurHashEncode(bytes);
         }
-        late final mediaExtension = selectedFile.path
+        var mediaExtension = current.fileName
             .split('.')
             .last
             .toLowerCase();
+        if (mediaExtension.length > 5) {
+          mediaExtension = isVideo ? 'mp4' : 'jpg';
+        }
 
         late final mediaPath = '$postId/${!isVideo ? 'image_$i' : 'video_$i'}';
 
-        Uint8List bytes;
-        if (isVideo) {
+        Uint8List uploadBytes = bytes;
+        if (isVideo && !kIsWeb) {
           try {
-            final compressedVideo = await VideoPlus.compressVideo(selectedFile);
-            bytes = await PickImage().imageBytes(file: compressedVideo!.file!);
+            final compressedVideo = await VideoPlus.compressVideo(current.file);
+            if (compressedVideo?.file != null) {
+              uploadBytes = await compressedVideo!.file!.readAsBytes();
+            }
           } catch (error, stackTrace) {
             logE(
               'Error compressing video',
               error: error,
               stackTrace: stackTrace,
             );
-            bytes = selectedByte;
+            uploadBytes = bytes;
           }
-        } else {
-          bytes = selectedByte;
         }
         await storage.uploadBinary(
           mediaPath,
-          bytes,
+          uploadBytes,
           fileOptions: FileOptions(
             contentType: '${!isVideo ? 'image' : 'video'}/$mediaExtension',
             cacheControl: '9000000',

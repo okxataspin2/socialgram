@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:cross_file/cross_file.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:env/env.dart';
@@ -19,12 +19,12 @@ class CloudinaryService {
   /// Upload image with validation
   Future<String?> uploadImage({
     required String userId,
-    required File file,
+    required XFile file,
     required MediaCategory category,
     String? customPublicId,
   }) async {
-    final fileSize = await file.length();
-    if (fileSize > maxImageSize) {
+    final fileBytes = await file.readAsBytes();
+    if (fileBytes.length > maxImageSize) {
       throw Exception('Image must be under 5MB');
     }
 
@@ -41,11 +41,14 @@ class CloudinaryService {
       ..fields['public_id'] = publicId
       ..fields['transformation'] = 'q_auto,f_auto,w_1080'
       ..fields['format'] = 'auto'
-      ..files.add(await http.MultipartFile.fromPath(
-        'file',
-        file.path,
-        contentType: MediaType('image', 'jpeg'),
-      ));
+      ..files.add(
+        http.MultipartFile.fromBytes(
+          'file',
+          fileBytes,
+          filename: file.name,
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      );
 
     final response = await request.send();
 
@@ -59,7 +62,7 @@ class CloudinaryService {
   /// Upload video with validation
   Future<String?> uploadVideo({
     required String userId,
-    required File file,
+    required XFile file,
     required MediaCategory category,
     required int durationSeconds,
   }) async {
@@ -67,8 +70,8 @@ class CloudinaryService {
       throw Exception('Video must be $maxStoryDuration seconds or less');
     }
 
-    final fileSize = await file.length();
-    if (fileSize > maxVideoSize) {
+    final fileBytes = await file.readAsBytes();
+    if (fileBytes.length > maxVideoSize) {
       throw Exception('Video must be under 50MB');
     }
 
@@ -86,11 +89,14 @@ class CloudinaryService {
       ..fields['transformation'] = 'q_auto,f_mp4,w_720'
       ..fields['resource_type'] = 'video'
       ..fields['format'] = 'mp4'
-      ..files.add(await http.MultipartFile.fromPath(
-        'file',
-        file.path,
-        contentType: MediaType('video', 'mp4'),
-      ));
+      ..files.add(
+        http.MultipartFile.fromBytes(
+          'file',
+          fileBytes,
+          filename: file.name,
+          contentType: MediaType('video', 'mp4'),
+        ),
+      );
 
     final response = await request.send();
 

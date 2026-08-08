@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -344,7 +343,7 @@ abstract class StoriesBaseRepository {
   /// Uploads the story media into the Supabase storage.
   Future<String> uploadStoryMedia({
     required String storyId,
-    required File imageFile,
+    required String fileName,
     required Uint8List imageBytes,
   });
 }
@@ -1711,11 +1710,11 @@ WHERE user_id = ? AND expires_at > current_timestamp
   @override
   Future<String> uploadStoryMedia({
     required String storyId,
-    required File imageFile,
+    required String fileName,
     required Uint8List imageBytes,
   }) async {
     final stories = _powerSyncRepository.supabase.storage.from('stories');
-    final imageExtension = imageFile.path.split('.').last.toLowerCase();
+    final imageExtension = fileName.split('.').last.toLowerCase();
     final imagePath = '$storyId/image';
 
     await stories.uploadBinary(

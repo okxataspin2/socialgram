@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:database_client/database_client.dart';
@@ -45,11 +44,11 @@ class StoriesRepository extends StoriesBaseRepository {
   @override
   Future<String> uploadStoryMedia({
     required String storyId,
-    required File imageFile,
+    required String fileName,
     required Uint8List imageBytes,
   }) => _databaseClient.uploadStoryMedia(
     storyId: storyId,
-    imageFile: imageFile,
+    fileName: fileName,
     imageBytes: imageBytes,
   );
 

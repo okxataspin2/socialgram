@@ -3,6 +3,8 @@
 import 'dart:async';
 
 import 'package:app_ui/app_ui.dart';
+import 'package:cross_file/cross_file.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_instagram_offline_first_clone/app/app.dart';
 import 'package:flutter_instagram_offline_first_clone/feed/feed.dart';
@@ -34,33 +36,26 @@ class UserProfileCreatePost extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pickerSource = pickVideo ? PickerSource.video : PickerSource.both;
     return WillPopScope(
       onWillPop: () =>
           onPopInvoked == null ? Future.value(true) : Future.value(false),
-      child: PickImage().customMediaPicker(
+      child: PickImage().mediaPicker(
         key: imagePickerKey,
         context: context,
-        source: ImageSource.both,
-        pickerSource: pickerSource,
         multiSelection: !pickVideo,
-        wantKeepAlive: wantKeepAlive,
-        onMediaPicked: (details) => context.pushNamed(
+        onMediaPicked: (picked) => context.pushNamed(
           AppRoutes.publishPost.name,
-          extra: CreatePostProps(details: details, pickVideo: pickVideo),
+          extra: CreatePostProps(picked: picked, pickVideo: pickVideo),
         ),
-        onBackButtonTap: onBackButtonTap != null
-            ? () => onBackButtonTap?.call()
-            : null,
       ),
     );
   }
 }
 
 class CreatePostProps {
-  const CreatePostProps({required this.details, this.pickVideo = false});
+  const CreatePostProps({required this.picked, this.pickVideo = false});
 
-  final SelectedImagesDetails details;
+  final List<PickedMedia> picked;
   final bool pickVideo;
 }
 
@@ -77,19 +72,33 @@ class _CreatePostPageState extends State<CreatePostPage> {
   late TextEditingController _captionController;
   late List<Media> _media;
 
-  List<SelectedByte> get selectedFiles => widget.props.details.selectedFiles;
+  List<PickedMedia> get picked => widget.props.picked;
 
   @override
   void initState() {
     super.initState();
     _captionController = TextEditingController();
-    _media = selectedFiles
+    _media = picked
         .map(
-          (e) => e.isThatImage
-              ? MemoryImageMedia(bytes: e.selectedByte, id: uuid.v4())
-              : MemoryVideoMedia(id: uuid.v4(), file: e.selectedFile),
+          (e) => e.isImage
+              ? MemoryImageMedia(
+                  bytes: e.bytes ?? Uint8List(0),
+                  id: uuid.v4(),
+                )
+              : MemoryVideoMedia(
+                  id: uuid.v4(),
+                  file: XFile(
+                    _tempPathFor(e),
+                    name: e.fileName,
+                  ),
+                ),
         )
         .toList();
+  }
+
+  String _tempPathFor(PickedMedia media) {
+    if (!kIsWeb && media.file.path.isNotEmpty) return media.file.path;
+    return 'memory://${media.fileName}';
   }
 
   @override
@@ -113,7 +122,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
       unawaited(
         FeedPageController().processPostMedia(
           postId: postId,
-          selectedFiles: selectedFiles,
+          picked: picked,
           caption: _captionController.text.trim(),
           pickVideo: widget.props.pickVideo,
         ),

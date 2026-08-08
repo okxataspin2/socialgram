@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_instagram_offline_first_clone/l10n/l10n.dart';
 import 'package:instagram_blocks_ui/instagram_blocks_ui.dart';
 import 'package:shared/shared.dart';
-import 'package:stories_editor/stories_editor.dart';
 import 'package:styled_text/styled_text.dart';
 
 void initUtilities(BuildContext context, Locale locale) {
@@ -15,22 +14,7 @@ void initUtilities(BuildContext context, Locale locale) {
   final textTheme = theme.textTheme;
   final titleMedium = textTheme.titleMedium;
 
-  PickImage().init(
-    tabsTexts: TabsTexts(
-      photoText: l10n.photoText,
-      videoText: l10n.videoText,
-      acceptAllPermissions: l10n.acceptAllPermissionsText,
-      clearImagesText: l10n.clearImagesText,
-      deletingText: l10n.deletingText,
-      galleryText: l10n.galleryText,
-      holdButtonText: l10n.holdButtonText,
-      noMediaFound: l10n.noMediaFound,
-      notFoundingCameraText: l10n.notFoundingCameraText,
-      noCameraFoundText: l10n.noCameraFoundText,
-      newPostText: l10n.newPostText,
-      newAvatarImageText: l10n.newAvatarImageText,
-    ),
-  );
+  PickImage().init();
   BlockSettings().init(
     postDelegate: PostTextDelegate(
       cancelText: l10n.cancelText,

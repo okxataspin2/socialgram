@@ -1,6 +1,6 @@
 // ignore_for_file: overridden_fields
 
-import 'dart:io';
+import 'package:cross_file/cross_file.dart' show XFile;
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
@@ -57,7 +57,7 @@ class MemoryVideoMedia extends Media {
   });
 
   /// The file of the memory image.
-  final File file;
+  final XFile file;
 
   /// The video media block type identifier.
   static const identifier = '__memory_video_media__';

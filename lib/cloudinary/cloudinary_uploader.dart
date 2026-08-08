@@ -1,4 +1,5 @@
-import 'dart:io';
+
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_instagram_offline_first_clone/cloudinary/cloudinary_service.dart';
 
@@ -10,7 +11,7 @@ class CloudinaryUploader {
   /// Upload profile picture with validation
   static Future<String?> uploadProfilePicture({
     required BuildContext context,
-    required File file,
+    required XFile file,
     required String userId,
   }) async {
     final service = CloudinaryService();
@@ -30,7 +31,7 @@ class CloudinaryUploader {
   /// Upload post image with validation
   static Future<String?> uploadPostImage({
     required BuildContext context,
-    required File file,
+    required XFile file,
     required String userId,
   }) async {
     final service = CloudinaryService();
@@ -50,7 +51,7 @@ class CloudinaryUploader {
   /// Upload post video with validation (50MB, 20s max)
   static Future<String?> uploadPostVideo({
     required BuildContext context,
-    required File file,
+    required XFile file,
     required String userId,
     required int durationSeconds,
   }) async {
@@ -77,7 +78,7 @@ class CloudinaryUploader {
   /// Upload story video (20s max, auto-delete after 24h)
   static Future<String?> uploadStoryVideo({
     required BuildContext context,
-    required File file,
+    required XFile file,
     required String userId,
     required int durationSeconds,
   }) async {
@@ -104,7 +105,7 @@ class CloudinaryUploader {
   /// Upload story image
   static Future<String?> uploadStoryImage({
     required BuildContext context,
-    required File file,
+    required XFile file,
     required String userId,
   }) async {
     final service = CloudinaryService();
@@ -124,7 +125,7 @@ class CloudinaryUploader {
   /// Upload chat media
   static Future<String?> uploadChatMedia({
     required BuildContext context,
-    required File file,
+    required XFile file,
     required String userId,
     bool isVideo = false,
   }) async {

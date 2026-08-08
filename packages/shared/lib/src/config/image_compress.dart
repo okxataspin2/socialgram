@@ -1,15 +1,20 @@
-import 'dart:io';
+// ignore_for_file: public_member_api_docs
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:cross_file/cross_file.dart';
 
-/// {@template image_compress}
-/// Allows compressing image files and bytes.
-/// {@endtemplate}
+import 'picked_media.dart';
+
+/// Platform-neutral image compression.
+///
+/// IMPORTANT: this file never imports `dart:io`, so it compiles for web.
+/// The native compression path uses [XFile.path], the web path compresses
+/// in-memory bytes.
 class ImageCompress {
   const ImageCompress._();
 
-  /// Compress image byte.
+  /// Compresses image bytes (web-safe).
   static Future<Uint8List> compressByte(Uint8List file) async {
     if (file.lengthInBytes > 200000) {
       final result = await FlutterImageCompress.compressWithList(
@@ -22,47 +27,21 @@ class ImageCompress {
     }
   }
 
-  /// Compresses file bytes and writes into file.
-  static Future<File> compressByteAndWriteFile(
-    Uint8List file, {
-    required Directory tempDir,
-    required String fileExtension,
-  }) async {
-    final bytes = await compute(compressByte, file);
-    final newFile = await compute(
-      (list) => writeToFile(
-        list[0] as ByteData,
-        tempDir: list[1] as Directory,
-        fileExtension: list[2] as String,
-      ),
-      [ByteData.view(bytes.buffer), tempDir, fileExtension],
-    );
-    return newFile;
-  }
-
-  /// Writes to the file `ByteData` with [fileExtension].
-  static Future<File> writeToFile(
-    ByteData data, {
-    required Directory tempDir,
-    required String fileExtension,
-  }) async {
-    final buffer = data.buffer;
-    final tempPath = tempDir.path;
-    final filePath = '$tempPath/${DateTime.now()}.$fileExtension';
-    return File(filePath).writeAsBytes(
-      buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-    );
-  }
-
-  /// Compress image file.
-  static Future<XFile?> compressFile(File file) async {
-    final filePath = file.absolute.path;
+  /// Compresses an image file. Works both on native and web.
+  static Future<XFile?> compressFile(XFile file) async {
+    final filePath = file.path;
     final lastIndex = filePath.lastIndexOf(RegExp('.png|.jp'));
+
+    if (kIsWeb) {
+      final bytes = await compressByte(await file.readAsBytes());
+      return XFile.fromData(bytes, name: file.name);
+    }
+
     if (lastIndex == -1) return null;
     final splitted = filePath.substring(0, lastIndex);
     final outPath = '${splitted}_out${filePath.substring(lastIndex)}';
 
-    if (lastIndex == filePath.lastIndexOf(RegExp('.png'))) {
+    if (filePath.endsWith('.png')) {
       final compressedImage = await FlutterImageCompress.compressAndGetFile(
         filePath,
         outPath,
@@ -82,5 +61,15 @@ class ImageCompress {
       );
       return compressedImage;
     }
+  }
+
+  /// Applies default compression to picked media when possible.
+  static Future<PickedMedia> compressMedia(PickedMedia media) async {
+    final compressed = await compressFile(media.file);
+    if (compressed == null) return media;
+    return PickedMedia(
+      file: compressed,
+      bytes: kIsWeb ? await compressed.readAsBytes() : null,
+    );
   }
 }

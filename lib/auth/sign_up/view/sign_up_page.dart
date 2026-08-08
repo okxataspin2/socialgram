@@ -1,7 +1,7 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:app_ui/app_ui.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_instagram_offline_first_clone/auth/sign_up/cubit/sign_up_cubit.dart';
@@ -34,7 +34,7 @@ class SignUpView extends StatefulWidget {
 
 class _SignUpViewState extends State<SignUpView> {
   Uint8List? _imageBytes;
-  File? _avatarFile;
+  XFile? _avatarFile;
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,8 @@
-import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:cross_file/cross_file.dart' show XFile;
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -47,14 +50,20 @@ class VoiceMessageService {
   Future<String> uploadVoiceMessage({
     required String chatId,
     required String fileName,
-    required File file,
+    required String path,
   }) async {
     final storage = Supabase.instance.client.storage.from('messages');
-    final path = '$chatId/$fileName';
+    final storagePath = '$chatId/$fileName';
 
-    final bytes = await file.readAsBytes();
+    final Uint8List bytes;
+    if (kIsWeb) {
+      final response = await http.get(Uri.parse(path));
+      bytes = response.bodyBytes;
+    } else {
+      bytes = await XFile(path).readAsBytes();
+    }
     await storage.uploadBinary(
-      path,
+      storagePath,
       bytes,
       fileOptions: const FileOptions(
         contentType: 'audio/mp4',
@@ -63,7 +72,7 @@ class VoiceMessageService {
       ),
     );
 
-    return path;
+    return storagePath;
   }
 
   /// Resolves a stored voice message reference to a short-lived URL suitable

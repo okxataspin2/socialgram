@@ -1,7 +1,7 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:app_ui/app_ui.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:shared/shared.dart';
 
@@ -23,7 +23,7 @@ class AvatarImagePicker extends StatelessWidget {
   });
 
   final Uint8List? imageBytes;
-  final void Function(Uint8List, File)? onUpload;
+  final void Function(Uint8List, XFile?)? onUpload;
   final bool compress;
   final double radius;
   final double addButtonRadius;
@@ -35,25 +35,22 @@ class AvatarImagePicker extends StatelessWidget {
   ///
   /// Handles compressing the image before returning it.
   Future<void> _pickImage(BuildContext context) async {
-    final file = await PickImage().pickImage(
-      context,
+    final media = await PickImage().pickMedia(
+      context: context,
       pickAvatar: true,
-      source: ImageSource.both,
     );
-    if (file == null) return;
+    if (media == null) return;
 
-    final selectedFile = file.selectedFiles.firstOrNull;
-    if (selectedFile == null) return;
-    final compressed = await ImageCompress.compressFile(
-      selectedFile.selectedFile,
-    );
-    final compressedFile = compressed == null ? null : File(compressed.path);
-    final newFile = compressedFile ?? selectedFile.selectedFile;
-    final compressedBytes = compressedFile == null
-        ? null
-        : await PickImage().imageBytes(file: compressedFile);
-    final bytes = compressedBytes ?? selectedFile.selectedByte;
-    onUpload?.call(bytes, newFile);
+    XFile file;
+    if (compress) {
+      final compressed = await ImageCompress.compressFile(media.file);
+      file = compressed ?? media.file;
+    } else {
+      file = media.file;
+    }
+
+    final bytes = await file.readAsBytes();
+    onUpload?.call(bytes, file);
   }
 
   @override

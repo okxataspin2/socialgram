@@ -14,6 +14,7 @@ dependencies:
   cached_memory_image: ^1.5.0
   cached_network_image: ^3.4.1
   carousel_slider: ^5.1.0
+  cross_file: ^0.3.4
   flutter:
     sdk: flutter
   flutter_animate: ^4.5.2
