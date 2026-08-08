@@ -16,7 +16,7 @@ PickerPlatform buildPickerPlatform() => PickerPlatform();
 class PickerPlatform {
   static final _defaultFilterOption = FilterOptionGroup(
     videoOption: FilterOption(
-      durationConstraint: DurationConstraint(max: 3.minutes),
+      durationConstraint: DurationConstraint(max: const Duration(minutes: 3)),
     ),
   );
 
@@ -48,10 +48,10 @@ class PickerPlatform {
         mainAxisSpacing: 1.5,
       );
 
-  List<PickedMedia> _map(List<SelectedFile> files) => files
+  List<PickedMedia> _map(List<SelectedByte> files) => files
       .map(
         (e) => PickedMedia(
-          file: XFile(e.filePath, name: e.fileName),
+          file: XFile(e.selectedFile.path),
           bytes: e.selectedByte,
         ),
       )
@@ -79,7 +79,6 @@ class PickerPlatform {
     final media = await context.pickImage(
       source: _nativeSource(source),
       multiImages: false,
-      pickAvatar: pickAvatar,
       filterOption: _defaultFilterOption,
       galleryDisplaySettings: GalleryDisplaySettings(
         pickAvatar: pickAvatar,
@@ -126,7 +125,7 @@ class PickerPlatform {
       cropImage: true,
       tabsTexts: _tabsTexts,
       appTheme: _appTheme(context),
-      callbackFunction: (details) =>
+      callbackFunction: (details) async =>
           onMediaPicked.call(_map(details.selectedFiles)),
     ),
     multiSelection: multiSelection,

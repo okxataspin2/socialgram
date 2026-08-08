@@ -1,8 +1,8 @@
 /// Platform-neutral facade for video helpers (compress + thumbnail).
 ///
-/// Native implementation lives in `video_plus_io.dart`; web is a no-op stub
-/// (`video_plus_web.dart`). Official video editing is not supported in the
-/// browser build yet.
+/// Native implementation lives in `video_plus_io.dart`; web runs real FFmpeg
+/// (`video_plus_web.dart`) compressed with [VideoCompress.compressVideo] and
+/// captures first frames via canvas.
 library;
 
 import 'dart:typed_data';
@@ -16,9 +16,9 @@ export 'video_plus_io.dart' if (dart.library.html) 'video_plus_web.dart';
 class VideoPlus {
   const VideoPlus._();
 
-  static Future<Uint8List?> getVideoThumbnail(dynamic file) =>
+  static Future<Uint8List?> getVideoThumbnail(Object file) =>
       impl.VideoPlus.getVideoThumbnail(file);
 
-  static Future<dynamic> compressVideo(dynamic file) =>
+  static Future<dynamic> compressVideo(Object file) =>
       impl.VideoPlus.compressVideo(file);
 }
