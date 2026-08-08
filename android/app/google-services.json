@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "849165391714",
+    "project_id": "socialgramokie",
+    "storage_bucket": "socialgramokie.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849165391714:android:889446a95fe07d320d3e3b",
+        "android_client_info": {
+          "package_name": "com.emilzulufov.flutter_instagram_offline_first_clone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwDjvuxw-cChEfnGGgxK3CnD_zgA1iv9Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

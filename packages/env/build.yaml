@@ -1,0 +1,7 @@
+targets:
+  $default:
+    sources:
+      include:
+        - lib/**
+        - .env.dev
+        - .env.prod
