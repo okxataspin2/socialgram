@@ -62,21 +62,3 @@ void initUtilities(BuildContext context, Locale locale) {
   );
 }
 
-StoriesEditorLocalizationDelegate storiesEditorLocalizationDelegate(
-  BuildContext context,
-) {
-  final l10n = context.l10n;
-  return StoriesEditorLocalizationDelegate(
-    cancelText: l10n.cancelText,
-    discardEditsText: l10n.discardEditsText,
-    discardText: l10n.discardText,
-    doneText: l10n.doneText,
-    draftEmpty: l10n.draftEmpty,
-    errorText: l10n.errorText,
-    loseAllEditsText: l10n.loseAllEditsText,
-    saveDraft: l10n.saveDraft,
-    successfullySavedText: l10n.successfullySavedText,
-    tapToTypeText: l10n.tapToTypeText,
-    uploadText: l10n.uploadText,
-  );
-}

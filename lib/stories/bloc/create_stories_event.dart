@@ -17,6 +17,7 @@ final class CreateStoriesStoryCreateRequested extends CreateStoriesEvent {
     required this.author,
     required this.contentType,
     required this.filePath,
+    this.storyMedia,
     this.onStoryCreated,
     this.onError,
     this.onLoading,
@@ -26,6 +27,7 @@ final class CreateStoriesStoryCreateRequested extends CreateStoriesEvent {
   final User author;
   final StoryContentType contentType;
   final String filePath;
+  final PickedMedia? storyMedia;
   final int? duration;
   final VoidCallback? onStoryCreated;
   final VoidCallback? onLoading;

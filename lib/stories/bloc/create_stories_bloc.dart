@@ -60,7 +60,7 @@ class CreateStoriesBloc extends Bloc<CreateStoriesEvent, CreateStoriesState> {
       event.onLoading?.call();
 
       final storyId = uuid.v4();
-      final storyImageFile = XFile(event.filePath);
+      final storyImageFile = event.storyMedia?.file ?? XFile(event.filePath);
       XFile compressedFile;
       if (kIsWeb) {
         compressedFile = storyImageFile;

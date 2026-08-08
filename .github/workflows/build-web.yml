@@ -19,6 +19,9 @@ jobs:
 
       - run: flutter pub get
 
+      - name: Download PowerSync web workers
+        run: dart run powersync:setup_web
+
       - name: Build web
         run: flutter build web --release -t lib/main_development.dart
 

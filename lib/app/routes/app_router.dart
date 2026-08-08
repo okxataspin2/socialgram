@@ -388,11 +388,9 @@ class AppRouter {
 
                       return CustomTransitionPage(
                         key: state.pageKey,
-                        child: StoriesEditor(
+                        child: storyEditorScreen(
+                          context: context,
                           onDone: onDone,
-                          storiesEditorLocalizationDelegate:
-                              storiesEditorLocalizationDelegate(context),
-                          galleryThumbnailQuality: 900,
                         ),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
