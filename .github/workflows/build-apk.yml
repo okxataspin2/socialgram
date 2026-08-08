@@ -28,7 +28,7 @@ jobs:
 
       - run: flutter build apk --debug -t lib/main_development.dart --flavor production
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: socialgram-apk
           path: build/app/outputs/flutter-apk/app-production-debug.apk
