@@ -80,6 +80,7 @@ class _WebMediaPickerPage extends StatelessWidget {
   const _WebMediaPickerPage({
     required this.onMediaPicked,
     this.multiSelection = true,
+    super.key,
   });
 
   final ValueSetter<List<PickedMedia>> onMediaPicked;

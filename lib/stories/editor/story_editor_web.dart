@@ -9,10 +9,17 @@ import 'package:flutter_instagram_offline_first_clone/stories/stories.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared/shared.dart';
 
+/// Returns the web story composer screen.
+Widget storyEditorScreen({
+  required BuildContext context,
+  required dynamic Function(String)? onDone,
+}) =>
+    const WebStoryComposer();
+
 /// Web story composer.
 ///
 /// The full `stories_editor` package (drawing, stickers, audio) depends on
-/// native file APIs that are not available in browsers. This lightweight
+/// native file APIs that are not available in browser. This lightweight
 /// composer lets web users pick a photo and upload it as a story.
 class WebStoryComposer extends StatefulWidget {
   const WebStoryComposer({super.key});
