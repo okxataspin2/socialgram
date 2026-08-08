@@ -45,17 +45,19 @@ class VideoPlus {
         ..muted = true
         ..playsInline = true;
 
-      await video.onLoadedMetadata.first;
+      await video.onLoadedMetadata.first
+          .timeout(const Duration(seconds: 15));
       video.currentTime = 0.05;
-      await video.onSeeked.first;
+      await video.onSeeked.first.timeout(const Duration(seconds: 10));
 
       final canvas = web.HTMLCanvasElement()
         ..width = video.videoWidth
         ..height = video.videoHeight;
       final ctx = canvas.getContext('2d');
+      if (ctx is! web.CanvasRenderingContext2D) return null;
       ctx.drawImage(video, 0, 0);
 
-      final dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      final dataUrl = canvas.toDataURL('image/jpeg', 0.8.toJS);
       final parts = dataUrl.split(',');
       if (parts.length != 2) return null;
       final base64 = parts[1];
