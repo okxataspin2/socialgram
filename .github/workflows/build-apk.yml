@@ -20,6 +20,10 @@ jobs:
         with:
           channel: stable
 
+      - run: flutter config --no-analytics
+
+      - run: yes | flutter doctor --android-licenses
+
       - run: flutter pub get
 
       - run: flutter build apk --release -t lib/main_development.dart
