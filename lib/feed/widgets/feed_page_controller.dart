@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_instagram_offline_first_clone/feed/feed.dart';
 import 'package:flutter_instagram_offline_first_clone/feed/post/video/video.dart';
@@ -95,13 +94,20 @@ class FeedPageController extends ChangeNotifier {
 
         Uint8List bytes = await video.readBytes();
         Uint8List? firstFrame;
-        if (!kIsWeb) {
+        try {
           firstFrame = await VideoPlus.getVideoThumbnail(video.file);
           final compressedVideo =
               (await VideoPlus.compressVideo(video.file))?.file;
           if (compressedVideo != null) {
             bytes = await compressedVideo.readAsBytes();
           }
+        } catch (error, stackTrace) {
+          logE(
+            'Error processing video for reel',
+            error: error,
+            stackTrace: stackTrace,
+          );
+          bytes = await video.readBytes();
         }
         final blurHash = firstFrame == null
             ? ''
@@ -151,7 +157,16 @@ class FeedPageController extends ChangeNotifier {
         String blurHash;
         Uint8List? convertedBytes;
         if (isVideo) {
-          convertedBytes = kIsWeb ? null : await VideoPlus.getVideoThumbnail(current.file);
+          try {
+            convertedBytes = await VideoPlus.getVideoThumbnail(current.file);
+          } catch (error, stackTrace) {
+            logE(
+              'Error generating video thumbnail',
+              error: error,
+              stackTrace: stackTrace,
+            );
+            convertedBytes = null;
+          }
           blurHash = convertedBytes == null
               ? ''
               : await BlurHashPlus.blurHashEncode(convertedBytes);
@@ -169,7 +184,7 @@ class FeedPageController extends ChangeNotifier {
         late final mediaPath = '$postId/${!isVideo ? 'image_$i' : 'video_$i'}';
 
         Uint8List uploadBytes = bytes;
-        if (isVideo && !kIsWeb) {
+        if (isVideo) {
           try {
             final compressedVideo = await VideoPlus.compressVideo(current.file);
             if (compressedVideo?.file != null) {

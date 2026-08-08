@@ -1,13 +1,127 @@
 // ignore_for_file: public_member_api_docs
 
+import 'dart:js_interop';
 import 'dart:typed_data';
 
-/// Web stub for [VideoPlus] - video compression/thumbnails are not supported
-/// in the browser (they require native codecs).
+import 'package:cross_file/cross_file.dart';
+import 'package:ffmpeg_wasm/ffmpeg_wasm.dart';
+import 'package:web/web.dart' as web;
+
+/// Web implementation of the video helpers.
+///
+/// Compression runs real FFmpeg in the browser through `ffmpeg.wasm`;
+/// thumbnails are captured from a `<video>` element onto a `<canvas>`.
 class VideoPlus {
   const VideoPlus._();
 
-  static Future<Uint8List?> getVideoThumbnail(Object file) async => null;
+  static FFmpeg? _ffmpeg;
 
-  static Future<Object?> compressVideo(Object file) async => null;
+  static const _corePath =
+      'https://unpkg.com/@ffmpeg/core@0.12.6/dist/ffmpeg-core.js';
+
+  static Future<FFmpeg> _instance() async {
+    final existing = _ffmpeg;
+    if (existing != null) return existing;
+    final ffmpeg = createFFmpeg(
+      CreateFFmpegParam(log: false, corePath: _corePath),
+    );
+    if (!ffmpeg.isLoaded()) {
+      await ffmpeg.load();
+    }
+    return _ffmpeg = ffmpeg;
+  }
+
+  /// Captures the first frame of the video as JPEG bytes.
+  static Future<Uint8List?> getVideoThumbnail(Object file) async {
+    final bytes = await (file as XFile).readAsBytes();
+    final blob = web.Blob(
+      [bytes.toJS].toJS,
+      web.BlobPropertyBag(type: 'video/mp4'),
+    );
+    final url = web.URL.createObjectURL(blob);
+    try {
+      final video = web.HTMLVideoElement()
+        ..src = url
+        ..muted = true
+        ..playsInline = true;
+
+      await video.onLoadedMetadata.first;
+      video.currentTime = 0.05;
+      await video.onSeeked.first;
+
+      final canvas = web.HTMLCanvasElement()
+        ..width = video.videoWidth
+        ..height = video.videoHeight;
+      final ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+
+      final dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      final parts = dataUrl.split(',');
+      if (parts.length != 2) return null;
+      final base64 = parts[1];
+      final raw = base64
+          .replaceAll(RegExp(r'\s'), '')
+          .replaceAll('-', '+')
+          .replaceAll('_', '/');
+      return _decodeBase64(raw);
+    } finally {
+      web.URL.revokeObjectURL(url);
+    }
+  }
+
+  static Uint8List _decodeBase64(String input) {
+    final buffer = <int>[];
+    var bits = 0;
+    var value = 0;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    for (final char in input.codeUnits) {
+      if (char == 61) break; // '='
+      final index = chars.indexOf(String.fromCharCode(char));
+      if (index == -1) continue;
+      value = (value << 6) | index;
+      bits += 6;
+      if (bits >= 8) {
+        bits -= 8;
+        buffer.add((value >> bits) & 0xff);
+      }
+    }
+    return Uint8List.fromList(buffer);
+  }
+
+  /// Compresses the video with FFmpeg and returns an object exposing `file`.
+  static Future<Object?> compressVideo(Object file) async {
+    final input = await (file as XFile).readAsBytes();
+    final ffmpeg = await _instance();
+
+    ffmpeg.writeFile('input.mp4', input);
+    try {
+      await ffmpeg.runCommand(
+        '-i input.mp4 '
+        '-vf "scale=min(1280,iw):-2" '
+        '-c:v libx264 -preset veryfast -crf 28 '
+        '-c:a aac -b:a 96k '
+        '-movflags +faststart '
+        'output.mp4',
+      );
+      final output = ffmpeg.readFile('output.mp4');
+      return _WebCompressResult(
+        XFile.fromData(
+          output,
+          name: 'compressed_${file.name}',
+          mimeType: 'video/mp4',
+        ),
+      );
+    } finally {
+      try {
+        ffmpeg.unlink('input.mp4');
+        ffmpeg.unlink('output.mp4');
+      } catch (_) {}
+    }
+  }
+}
+
+class _WebCompressResult {
+  const _WebCompressResult(this.file);
+
+  final XFile file;
 }
