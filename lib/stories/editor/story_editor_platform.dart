@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 import 'story_editor_native.dart' if (dart.library.html) 'story_editor_web.dart'
     as impl;
 
@@ -10,6 +12,6 @@ import 'story_editor_native.dart' if (dart.library.html) 'story_editor_web.dart'
 /// mobile. It is unused by the web flow.
 Widget storyEditorScreen({
   required BuildContext context,
-  required dynamic Function(String?)? onDone,
+  required dynamic Function(String)? onDone,
 }) =>
     impl.storyEditorScreen(context: context, onDone: onDone);

@@ -73,7 +73,7 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
     addError(error, stackTrace);
     final status = switch (error) {
       AuthException(:final statusCode) => switch (statusCode?.parse) {
-        HttpStatus.tooManyRequests => ForgotPasswordStatus.tooManyRequests,
+        429 => ForgotPasswordStatus.tooManyRequests,
         _ => ForgotPasswordStatus.failure,
       },
       _ => ForgotPasswordStatus.failure,

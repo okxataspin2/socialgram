@@ -1,5 +1,7 @@
 // ignore_for_file: overridden_fields
 
+import 'dart:typed_data';
+
 import 'package:cross_file/cross_file.dart' show XFile;
 
 import 'package:json_annotation/json_annotation.dart';
@@ -51,6 +53,7 @@ class MemoryVideoMedia extends Media {
   const MemoryVideoMedia({
     required super.id,
     required this.file,
+    this.bytes,
     super.url = '',
     super.blurHash,
     super.type = MemoryVideoMedia.identifier,
@@ -59,11 +62,14 @@ class MemoryVideoMedia extends Media {
   /// The file of the memory image.
   final XFile file;
 
+  /// The video bytes when already available in memory (web picks).
+  final Uint8List? bytes;
+
   /// The video media block type identifier.
   static const identifier = '__memory_video_media__';
 
   @override
   Map<String, dynamic> toJson() => {
-    'file': file.readAsBytesSync().toList(),
+    'file': bytes?.toList() ?? <int>[],
   };
 }

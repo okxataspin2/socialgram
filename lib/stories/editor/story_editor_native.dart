@@ -5,7 +5,7 @@ import 'package:stories_editor/stories_editor.dart';
 /// Native (Android/iOS) story editor backed by the `stories_editor` package.
 Widget storyEditorScreen({
   required BuildContext context,
-  required dynamic Function(String?)? onDone,
+  required dynamic Function(String)? onDone,
 }) {
   final l10n = context.l10n;
   return StoriesEditor(

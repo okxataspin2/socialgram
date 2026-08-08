@@ -5,6 +5,8 @@
 /// browser build yet.
 library;
 
+import 'dart:typed_data';
+
 import 'video_plus_io.dart' if (dart.library.html) 'video_plus_web.dart'
     as impl;
 
@@ -15,7 +17,8 @@ class VideoPlus {
   const VideoPlus._();
 
   static Future<Uint8List?> getVideoThumbnail(dynamic file) =>
-      impl.getVideoThumbnail(file);
+      impl.VideoPlus.getVideoThumbnail(file);
 
-  static Future<dynamic> compressVideo(dynamic file) => impl.compressVideo(file);
+  static Future<dynamic> compressVideo(dynamic file) =>
+      impl.VideoPlus.compressVideo(file);
 }

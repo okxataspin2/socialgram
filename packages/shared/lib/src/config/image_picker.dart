@@ -54,10 +54,12 @@ class PickImage {
     required ValueSetter<List<PickedMedia>> onMediaPicked,
     bool multiSelection = true,
     PickedMediaSource source = PickedMediaSource.both,
+    Key? key,
   }) => _platform.mediaPicker(
     context: context,
     onMediaPicked: onMediaPicked,
     multiSelection: multiSelection,
     source: source,
+    key: key,
   );
 }

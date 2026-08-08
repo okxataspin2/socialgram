@@ -118,7 +118,9 @@ class PickerPlatform {
     required ValueSetter<List<PickedMedia>> onMediaPicked,
     bool multiSelection = true,
     PickedMediaSource source = PickedMediaSource.both,
+    Key? key,
   }) => CustomImagePicker(
+    key: key,
     galleryDisplaySettings: GalleryDisplaySettings(
       showImagePreview: true,
       cropImage: true,

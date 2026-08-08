@@ -41,6 +41,7 @@ dependencies:
   user_repository:
     path: ../user_repository
   video_player: ^2.8.2
+  web: ^1.1.0
   visibility_detector: ^0.4.0+2
 
 dev_dependencies:

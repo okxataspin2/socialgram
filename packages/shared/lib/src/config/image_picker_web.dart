@@ -28,7 +28,7 @@ class PickerPlatform {
       allowMultiple: false,
       withData: true,
     );
-    return _toMedia(result, multi: false);
+    return _toMedia(result);
   }
 
   Future<List<PickedMedia>?> pickMedias({
@@ -42,7 +42,7 @@ class PickerPlatform {
       allowMultiple: multiSelection,
       withData: true,
     );
-    return _toMedia(result, multi: true);
+    return _toMedias(result);
   }
 
   Widget mediaPicker({
@@ -50,14 +50,24 @@ class PickerPlatform {
     required ValueSetter<List<PickedMedia>> onMediaPicked,
     bool multiSelection = true,
     PickedMediaSource source = PickedMediaSource.both,
+    Key? key,
   }) => _WebMediaPickerPage(
+    key: key,
     multiSelection: multiSelection,
     onMediaPicked: onMediaPicked,
   );
 
-  PickedMedia? _toMedia(FilePickerResult? result, {required bool multi}) {
+  PickedMedia? _toMedia(FilePickerResult? result) {
     if (result == null || result.files.isEmpty) return null;
-    final file = result.files.first;
+    return _toPicked(result.files.first);
+  }
+
+  List<PickedMedia>? _toMedias(FilePickerResult? result) {
+    if (result == null || result.files.isEmpty) return null;
+    return result.files.map(_toPicked).toList(growable: false);
+  }
+
+  PickedMedia _toPicked(PlatformFile file) {
     final xfile = XFile.fromData(
       Uint8List.fromList(file.bytes ?? const []),
       name: file.name,

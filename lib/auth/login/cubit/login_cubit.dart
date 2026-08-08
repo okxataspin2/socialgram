@@ -149,7 +149,7 @@ class LoginCubit extends Cubit<LoginState> {
     final status = switch (e) {
       LogInWithPasswordFailure(:final AuthException error) =>
         switch (error.statusCode?.parse) {
-          HttpStatus.badRequest => LogInSubmissionStatus.invalidCredentials,
+          400 => LogInSubmissionStatus.invalidCredentials,
           _ => LogInSubmissionStatus.error,
         },
       LogInWithGoogleFailure() => LogInSubmissionStatus.googleLogInFailure,

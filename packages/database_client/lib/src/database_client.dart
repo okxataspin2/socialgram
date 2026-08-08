@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:powersync_repository/powersync_repository.dart';
+import 'package:powersync/sqlite3_common.dart';
 import 'package:shared/shared.dart';
 import 'package:user_repository/user_repository.dart';
 

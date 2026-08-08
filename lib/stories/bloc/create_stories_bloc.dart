@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_remote_config_repository/firebase_remote_config_repository.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:shared/shared.dart';
 import 'package:stories_repository/stories_repository.dart';

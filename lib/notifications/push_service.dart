@@ -1,5 +1,5 @@
 import 'package:shared/shared.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:user_repository/user_repository.dart';
 
 /// Sends push notifications through the `send-notification` Supabase Edge
