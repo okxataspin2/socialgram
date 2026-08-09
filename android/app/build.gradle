@@ -60,19 +60,25 @@ android {
     }
 
     signingConfigs {
-        if (System.getenv("ANDROID_KEYSTORE_PATH")) {
+        def hasReleaseKey = System.getenv("ANDROID_KEYSTORE_PATH") != null ||
+            (keystoreProperties['storeFile'] != null && file(keystoreProperties['storeFile']).exists())
+        if (hasReleaseKey) {
             release {
-                storeFile file(System.getenv("ANDROID_KEYSTORE_PATH"))
-                keyAlias System.getenv("ANDROID_KEYSTORE_ALIAS")
-                keyPassword System.getenv("ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD")
-                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                if (System.getenv("ANDROID_KEYSTORE_PATH")) {
+                    storeFile file(System.getenv("ANDROID_KEYSTORE_PATH"))
+                    keyAlias System.getenv("ANDROID_KEYSTORE_ALIAS")
+                    keyPassword System.getenv("ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD")
+                    storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                } else {
+                    keyAlias keystoreProperties['keyAlias']
+                    keyPassword keystoreProperties['keyPassword']
+                    storeFile file(keystoreProperties['storeFile'])
+                    storePassword keystoreProperties['storePassword']
+                }
             }
         } else {
             release {
-                keyAlias keystoreProperties['keyAlias']
-                keyPassword keystoreProperties['keyPassword']
-                storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-                storePassword keystoreProperties['storePassword']
+                signingConfig signingConfigs.debug
             }
         }
     }

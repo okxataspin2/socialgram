@@ -5,6 +5,9 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,9 +29,13 @@ jobs:
 
       - run: flutter pub get
 
-      - run: flutter build apk --debug -t lib/main_development.dart --flavor production
+      - name: Build release APK (universal, minified, debug-key signed)
+        run: flutter build apk --release -t lib/main_production.dart --flavor production
 
-      - uses: actions/upload-artifact@v4
+      - name: Publish APK download
+        uses: softprops/action-gh-release@v2
         with:
-          name: socialgram-apk
-          path: build/app/outputs/flutter-apk/app-production-debug.apk
+          tag_name: apk-latest
+          prerelease: true
+          generate_release_notes: true
+          files: build/app/outputs/flutter-apk/app-production-release.apk
