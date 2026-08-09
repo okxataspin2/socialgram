@@ -98,7 +98,8 @@ android {
 
     buildTypes {
         release {
-            signingConfig (signingConfigs.release.storeFile != null)
+            def useReleaseSigning = signingConfigs.release.storeFile != null
+            signingConfig = useReleaseSigning
                 ? signingConfigs.release
                 : signingConfigs.debug
             minifyEnabled true
