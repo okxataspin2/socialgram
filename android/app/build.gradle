@@ -60,25 +60,19 @@ android {
     }
 
     signingConfigs {
-        def hasReleaseKey = System.getenv("ANDROID_KEYSTORE_PATH") != null ||
-            (keystoreProperties['storeFile'] != null && file(keystoreProperties['storeFile']).exists())
-        if (hasReleaseKey) {
-            release {
-                if (System.getenv("ANDROID_KEYSTORE_PATH")) {
-                    storeFile file(System.getenv("ANDROID_KEYSTORE_PATH"))
-                    keyAlias System.getenv("ANDROID_KEYSTORE_ALIAS")
-                    keyPassword System.getenv("ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD")
-                    storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
-                } else {
-                    keyAlias keystoreProperties['keyAlias']
-                    keyPassword keystoreProperties['keyPassword']
-                    storeFile file(keystoreProperties['storeFile'])
-                    storePassword keystoreProperties['storePassword']
-                }
-            }
-        } else {
-            release {
-                signingConfig signingConfigs.debug
+        release {
+            def envFile = System.getenv("ANDROID_KEYSTORE_PATH")
+            if (envFile != null) {
+                storeFile file(envFile)
+                keyAlias System.getenv("ANDROID_KEYSTORE_ALIAS")
+                keyPassword System.getenv("ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD")
+                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            } else if (keystoreProperties['storeFile'] != null &&
+                file(keystoreProperties['storeFile']).exists()) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
             }
         }
     }
@@ -104,7 +98,9 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            signingConfig (signingConfigs.release.storeFile != null)
+                ? signingConfigs.release
+                : signingConfigs.debug
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt')
         }
