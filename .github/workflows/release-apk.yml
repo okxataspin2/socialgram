@@ -55,6 +55,6 @@ jobs:
           flutter build apk --release -t lib/main_production.dart --flavor production
 
       - name: Upload APK to GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: build/app/outputs/flutter-apk/app-production-release.apk
