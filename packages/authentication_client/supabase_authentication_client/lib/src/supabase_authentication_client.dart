@@ -141,7 +141,7 @@ class SupabaseAuthenticationClient implements AuthenticationClient {
         data: data,
         emailRedirectTo: kIsWeb
             ? null
-            : 'io._powerSyncRepository.supabase.flutterquickstart://login-callback/',
+            : 'io.supabase.flutterquickstart://login-callback/',
       );
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(SignUpWithPasswordFailure(error), stackTrace);
