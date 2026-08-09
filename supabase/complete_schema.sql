@@ -1,30 +1,89 @@
 -- ============================================================================
--- SocialGram - Complete Supabase Database Schema
+-- SocialGram - COMPLETE Supabase Database Schema (single-file setup)
 -- Made by RWAGENCY
 --
 -- INSTRUCTIONS:
--- 1. Create a new Supabase project at https://supabase.com/dashboard
--- 2. Go to SQL Editor → New Query
--- 3. Copy and paste the ENTIRE contents of this file
--- 4. Click "Run" (Play button)
--- 5. Wait for completion (~30 seconds)
--- 6. Your database is fully set up!
+-- 1. Open your Supabase project: https://supabase.com/dashboard
+-- 2. Go to SQL Editor -> New Query
+-- 3. Paste THIS ENTIRE FILE and click Run (~30 seconds)
 --
--- After running this SQL:
--- - Create an auth user with your email
--- - Run: UPDATE auth.users SET raw_app_meta_data = '{"role": "admin"}' WHERE email = 'your-email@example.com';
--- - That user will now have admin access at /admin
+-- !!! IMPORTANT !!!
+-- This script performs a FULL RESET first:
+--   - drops every app table, view, function, trigger and enum
+--   - deletes ALL storage objects and buckets (avatars/posts/stories/messages)
+--   - deletes ALL registered user accounts (auth.users)
+--   - drops the PowerSync publication
+-- Then it recreates the complete database from scratch.
+-- Safe to re-run any time. Only run on a project you want reset!
 --
--- Required environment variables for the app:
--- - SUPABASE_URL
--- - SUPABASE_ANON_KEY
--- - POWERSYNC_URL
--- - FCM_SERVER_KEY
--- - IOS_CLIENT_ID
--- - WEB_CLIENT_ID
--- - FCM_PROJECT_ID
--- - FCM_SERVICE_ACCOUNT_JSON
+-- After running:
+-- - Sign up in the app (that auto-creates the profile row via trigger)
+-- - For admin access run:
+--   UPDATE auth.users SET raw_app_meta_data = '{"role": "admin"}' WHERE email = 'your-email@example.com';
 -- ============================================================================
+
+-- ============================================================================
+-- STEP 0: FULL RESET (drop everything from previous setups)
+-- ============================================================================
+
+-- Drop all storage.objects policies (any leftover from previous runs)
+do $$ declare p record; begin
+  for p in (
+    select policyname from pg_policies
+    where schemaname = 'storage' and tablename = 'objects'
+  ) loop
+    execute format('drop policy if exists %I on storage.objects', p.policyname);
+  end loop;
+end $$;
+
+-- Drop app tables (order irrelevant thanks to CASCADE)
+drop table if exists public.user_roles cascade;
+drop table if exists public.admin_audit_logs cascade;
+drop table if exists public.admin_settings cascade;
+drop table if exists public.calls cascade;
+drop table if exists public.attachments cascade;
+drop table if exists public.messages cascade;
+drop table if exists public.participants cascade;
+drop table if exists public.conversations cascade;
+drop table if exists public.stories cascade;
+drop table if exists public.images cascade;
+drop table if exists public.videos cascade;
+drop table if exists public.subscriptions cascade;
+drop table if exists public.likes cascade;
+drop table if exists public.comments cascade;
+drop table if exists public.post_media cascade;
+drop table if exists public.posts cascade;
+drop table if exists public.profiles cascade;
+
+-- Drop enum types
+drop type if exists public.media_type cascade;
+drop type if exists public.conversation_type cascade;
+drop type if exists public.message_type cascade;
+drop type if exists public.attachment_type cascade;
+drop type if exists public.story_content_type cascade;
+
+-- Drop trigger functions (must match the functions recreated below)
+drop function if exists public.delete_storage_object(text, text) cascade;
+drop function if exists public.delete_avatar(text) cascade;
+drop function if exists public.delete_old_avatar() cascade;
+drop function if exists public.delete_old_profile() cascade;
+drop function if exists public.handle_new_user() cascade;
+drop function if exists public.handle_update_user() cascade;
+drop function if exists public.handle_delete_post_media() cascade;
+drop function if exists public.clear_posts_objects() cascade;
+drop function if exists public.handle_delete_story_media() cascade;
+drop function if exists public.clear_stories_objects() cascade;
+
+-- Wipe storage contents and buckets (recreated in STEP 2)
+delete from storage.objects;
+delete from storage.buckets;
+
+-- Drop the PowerSync publication so it can be recreated cleanly
+drop publication if exists powersync;
+
+-- Wipe all registered accounts (each signup gets a fresh profile
+-- automatically via the on_auth_user_created trigger from STEP 15)
+delete from auth.users;
 
 -- ============================================================================
 -- STEP 1: Enable PostgreSQL Extensions
