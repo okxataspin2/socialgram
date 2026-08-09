@@ -1,6 +1,6 @@
 [build]
-  command = "flutter build web --release -t lib/main_development.dart"
+  command = "bash scripts/portable_web_build.sh --prod"
   publish = "build/web"
 
 [build.environment]
-  "CHROME_EXECUTABLE" = "/usr/bin/google-chrome"
+  "NIXPKGS_ALLOW_UNFREE" = "1"

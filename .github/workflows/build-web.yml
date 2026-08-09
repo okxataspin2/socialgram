@@ -5,6 +5,9 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,10 +25,24 @@ jobs:
       - name: Download PowerSync web workers
         run: dart run powersync:setup_web
 
-      - name: Build web
-        run: flutter build web --release -t lib/main_development.dart
+      - name: Build web (production)
+        run: flutter build web --release -t lib/main_production.dart
 
       - name: Upload web artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: build/web
+
+  deploy-pages:
+    if: vars.GITHUB_PAGES == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
