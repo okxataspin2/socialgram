@@ -61,9 +61,7 @@ class _AdminPostApprovalScreenState extends State<AdminPostApprovalScreen> {
                 buildWhen: (p, c) => p.autoApprove != c.autoApprove,
                 builder: (context, state) {
                   return GlassChip(
-                    label: Text(
-                      state.autoApprove ? 'Auto: ON' : 'Auto: OFF',
-                    ),
+                    label: Text(state.autoApprove ? 'Auto: ON' : 'Auto: OFF'),
                     selected: state.autoApprove,
                     selectedColor: Colors.green,
                     onTap: () {
@@ -270,9 +268,7 @@ class _ApprovalCard extends StatelessWidget {
                 child: GlassButton(
                   onPressed: () => _showRejectDialog(context, bloc),
                   color: Colors.red.withOpacity(0.15),
-                  border: Border.all(
-                    color: Colors.red.withOpacity(0.3),
-                  ),
+                  border: Border.all(color: Colors.red.withOpacity(0.3)),
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -334,10 +330,12 @@ class _ApprovalCard extends StatelessWidget {
         ),
         GlassButton(
           onPressed: () {
-            bloc.add(AdminRejectPost(
-              id: post.id,
-              reason: controller.text.isNotEmpty ? controller.text : null,
-            ));
+            bloc.add(
+              AdminRejectPost(
+                id: post.id,
+                reason: controller.text.isNotEmpty ? controller.text : null,
+              ),
+            );
             Navigator.pop(context);
           },
           color: Colors.red.withOpacity(0.15),

@@ -46,9 +46,9 @@ class _AdminMessagesScreenState extends State<AdminMessagesScreen> {
                 const SizedBox(height: 12),
                 GlassButton(
                   onPressed: () {
-                    context
-                        .read<AdminBloc>()
-                        .add(const AdminMessagesRequested());
+                    context.read<AdminBloc>().add(
+                      const AdminMessagesRequested(),
+                    );
                   },
                   child: const Text('Retry'),
                 ),
@@ -90,18 +90,16 @@ class _AdminMessagesScreenState extends State<AdminMessagesScreen> {
           itemCount: state.messages.length,
           itemBuilder: (context, index) {
             final message = state.messages[index];
-            final createdAt =
-                DateFormat.yMd().add_jm().format(message.createdAt);
+            final createdAt = DateFormat.yMd().add_jm().format(
+              message.createdAt,
+            );
 
             return GlassCard(
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.all(12),
               onTap: () {
                 Navigator.of(context).push(
-                  AdminMessageThreadView.route(
-                    context,
-                    messageId: message.id,
-                  ),
+                  AdminMessageThreadView.route(context, messageId: message.id),
                 );
               },
               child: Row(
@@ -131,9 +129,7 @@ class _AdminMessagesScreenState extends State<AdminMessagesScreen> {
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
-                            color: isDark
-                                ? AppColors.white
-                                : AppColors.black,
+                            color: isDark ? AppColors.white : AppColors.black,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -174,9 +170,9 @@ class _AdminMessagesScreenState extends State<AdminMessagesScreen> {
                         ],
                         onSelected: (value) {
                           if (value == 'delete') {
-                            context
-                                .read<AdminBloc>()
-                                .add(AdminDeleteMessage(message.id));
+                            context.read<AdminBloc>().add(
+                              AdminDeleteMessage(message.id),
+                            );
                           }
                         },
                         icon: Icon(

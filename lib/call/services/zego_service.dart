@@ -22,8 +22,7 @@ class ZegoVideoService {
   }) async {
     if (_appId == 0 || _appSign.isEmpty) return;
 
-    ZegoUIKitPrebuiltCallInvitationService()
-        .setNavigatorKey(rootNavigatorKey);
+    ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(rootNavigatorKey);
 
     await ZegoUIKitPrebuiltCallInvitationService().init(
       appID: _appId,

@@ -59,8 +59,7 @@ class FeedPageController extends ChangeNotifier {
     required String caption,
     required bool pickVideo,
   }) async {
-    final isReel =
-        picked.length == 1 && picked.every((e) => e.isVideo);
+    final isReel = picked.length == 1 && picked.every((e) => e.isVideo);
     final navigateToReelPage = isReel;
     StatefulNavigationShell.of(
       _context,
@@ -83,7 +82,9 @@ class FeedPageController extends ChangeNotifier {
     String extensionOf(PickedMedia media) {
       final name = media.fileName.toLowerCase();
       final dot = name.lastIndexOf('.');
-      return dot == -1 ? (media.isVideo ? 'mp4' : 'jpg') : name.substring(dot + 1);
+      return dot == -1
+          ? (media.isVideo ? 'mp4' : 'jpg')
+          : name.substring(dot + 1);
     }
 
     if (isReel) {
@@ -96,10 +97,9 @@ class FeedPageController extends ChangeNotifier {
         Uint8List? firstFrame;
         try {
           firstFrame = await VideoPlus.getVideoThumbnail(video.file);
-          final compressedVideo =
-              (await VideoPlus.compressVideo(video.file))?.file;
-          if (compressedVideo != null) {
-            bytes = await compressedVideo.readAsBytes();
+          final compressed = await VideoPlus.compressVideo(video.file);
+          if (compressed != null) {
+            bytes = compressed;
           }
         } catch (error, stackTrace) {
           logE(
@@ -173,10 +173,7 @@ class FeedPageController extends ChangeNotifier {
         } else {
           blurHash = await BlurHashPlus.blurHashEncode(bytes);
         }
-        var mediaExtension = current.fileName
-            .split('.')
-            .last
-            .toLowerCase();
+        var mediaExtension = current.fileName.split('.').last.toLowerCase();
         if (mediaExtension.length > 5) {
           mediaExtension = isVideo ? 'mp4' : 'jpg';
         }
@@ -186,9 +183,9 @@ class FeedPageController extends ChangeNotifier {
         Uint8List uploadBytes = bytes;
         if (isVideo) {
           try {
-            final compressedVideo = await VideoPlus.compressVideo(current.file);
-            if (compressedVideo?.file != null) {
-              uploadBytes = await compressedVideo!.file!.readAsBytes();
+            final compressed = await VideoPlus.compressVideo(current.file);
+            if (compressed != null) {
+              uploadBytes = compressed;
             }
           } catch (error, stackTrace) {
             logE(

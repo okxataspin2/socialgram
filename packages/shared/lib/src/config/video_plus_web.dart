@@ -90,8 +90,8 @@ class VideoPlus {
     return Uint8List.fromList(buffer);
   }
 
-  /// Compresses the video with FFmpeg and returns an object exposing `file`.
-  static Future<Object?> compressVideo(Object file) async {
+  /// Compresses the video with FFmpeg and returns the compressed bytes.
+  static Future<Uint8List?> compressVideo(Object file) async {
     final input = await (file as XFile).readAsBytes();
     final ffmpeg = await _instance();
 
@@ -105,14 +105,7 @@ class VideoPlus {
         '-movflags +faststart '
         'output.mp4',
       );
-      final output = ffmpeg.readFile('output.mp4');
-      return _WebCompressResult(
-        XFile.fromData(
-          output,
-          name: 'compressed_${file.name}',
-          mimeType: 'video/mp4',
-        ),
-      );
+      return ffmpeg.readFile('output.mp4');
     } finally {
       try {
         ffmpeg.unlink('input.mp4');
@@ -120,10 +113,4 @@ class VideoPlus {
       } catch (_) {}
     }
   }
-}
-
-class _WebCompressResult {
-  const _WebCompressResult(this.file);
-
-  final XFile file;
 }

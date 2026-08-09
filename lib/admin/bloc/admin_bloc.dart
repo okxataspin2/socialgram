@@ -123,10 +123,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         offset: event.offset,
       );
       emit(
-        state.copyWith(
-          messages: messages,
-          messagesStatus: AdminStatus.success,
-        ),
+        state.copyWith(messages: messages, messagesStatus: AdminStatus.success),
       );
     } catch (error, stackTrace) {
       emit(state.copyWith(messagesStatus: AdminStatus.failure));
@@ -239,8 +236,11 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       );
     } catch (error, stackTrace) {
       emit(state.copyWith(conversationsStatus: AdminStatus.failure));
-      logE('Failed to fetch conversations',
-          error: error, stackTrace: stackTrace);
+      logE(
+        'Failed to fetch conversations',
+        error: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -260,8 +260,11 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       );
     } catch (error, stackTrace) {
       emit(state.copyWith(messagesStatus: AdminStatus.failure));
-      logE('Failed to fetch conversation',
-          error: error, stackTrace: stackTrace);
+      logE(
+        'Failed to fetch conversation',
+        error: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -273,8 +276,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       final stats = await postsRepository.getPostsStats();
       emit(state.copyWith(postsStats: stats));
     } catch (error, stackTrace) {
-      logE('Failed to fetch posts stats',
-          error: error, stackTrace: stackTrace);
+      logE('Failed to fetch posts stats', error: error, stackTrace: stackTrace);
     }
   }
 
@@ -296,8 +298,11 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       );
     } catch (error, stackTrace) {
       emit(state.copyWith(pendingPostsStatus: AdminStatus.failure));
-      logE('Failed to fetch pending posts',
-          error: error, stackTrace: stackTrace);
+      logE(
+        'Failed to fetch pending posts',
+        error: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -307,14 +312,15 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   ) async {
     try {
       await postsRepository.approvePost(postId: event.id);
-      emit(state.copyWith(
-        pendingPosts: state.pendingPosts
-            .where((p) => p.id != event.id)
-            .toList(),
-      ));
+      emit(
+        state.copyWith(
+          pendingPosts: state.pendingPosts
+              .where((p) => p.id != event.id)
+              .toList(),
+        ),
+      );
     } catch (error, stackTrace) {
-      logE('Failed to approve post',
-          error: error, stackTrace: stackTrace);
+      logE('Failed to approve post', error: error, stackTrace: stackTrace);
     }
   }
 
@@ -323,18 +329,16 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     Emitter<AdminState> emit,
   ) async {
     try {
-      await postsRepository.rejectPost(
-        postId: event.id,
-        reason: event.reason,
+      await postsRepository.rejectPost(postId: event.id, reason: event.reason);
+      emit(
+        state.copyWith(
+          pendingPosts: state.pendingPosts
+              .where((p) => p.id != event.id)
+              .toList(),
+        ),
       );
-      emit(state.copyWith(
-        pendingPosts: state.pendingPosts
-            .where((p) => p.id != event.id)
-            .toList(),
-      ));
     } catch (error, stackTrace) {
-      logE('Failed to reject post',
-          error: error, stackTrace: stackTrace);
+      logE('Failed to reject post', error: error, stackTrace: stackTrace);
     }
   }
 
@@ -346,8 +350,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       await postsRepository.setAutoApprove(enabled: event.enabled);
       emit(state.copyWith(autoApprove: event.enabled));
     } catch (error, stackTrace) {
-      logE('Failed to set auto-approve',
-          error: error, stackTrace: stackTrace);
+      logE('Failed to set auto-approve', error: error, stackTrace: stackTrace);
     }
   }
 
@@ -365,8 +368,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       );
       add(const AdminUsersRequested());
     } catch (error, stackTrace) {
-      logE('Failed to create user',
-          error: error, stackTrace: stackTrace);
+      logE('Failed to create user', error: error, stackTrace: stackTrace);
     }
   }
 
@@ -382,13 +384,15 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         targetType: 'user',
         targetId: event.userId,
       );
-      emit(state.copyWith(
-        isImpersonating: true,
-        impersonatedUserId: event.userId,
-      ));
+      emit(
+        state.copyWith(isImpersonating: true, impersonatedUserId: event.userId),
+      );
     } catch (error, stackTrace) {
-      logE('Failed to start impersonation',
-          error: error, stackTrace: stackTrace);
+      logE(
+        'Failed to start impersonation',
+        error: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -398,13 +402,15 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   ) async {
     try {
       await userRepository.stopImpersonation();
-      emit(state.copyWith(
-        isImpersonating: false,
-        clearImpersonatedUserId: true,
-      ));
+      emit(
+        state.copyWith(isImpersonating: false, clearImpersonatedUserId: true),
+      );
     } catch (error, stackTrace) {
-      logE('Failed to stop impersonation',
-          error: error, stackTrace: stackTrace);
+      logE(
+        'Failed to stop impersonation',
+        error: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 }

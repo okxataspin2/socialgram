@@ -21,11 +21,11 @@ class FeedAppBar extends StatelessWidget {
             Text(
               'by RWAGENCY',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(
-                          alpha: 0.3,
-                        ),
-                    fontSize: 11,
-                  ),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.3),
+                fontSize: 11,
+              ),
             ),
           ],
         ),

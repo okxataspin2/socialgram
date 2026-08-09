@@ -13,13 +13,14 @@ class VideoPlus {
   static Future<Uint8List?> getVideoThumbnail(Object video) =>
       VideoCompress.getByteThumbnail((video as File).path);
 
-  /// Compresses the video.
-  static Future<MediaInfo?> compressVideo(Object video) async {
+  /// Compresses the video and returns the compressed bytes.
+  static Future<Uint8List?> compressVideo(Object video) async {
     await VideoCompress.setLogLevel(0);
 
-    return VideoCompress.compressVideo(
+    final compressed = await VideoCompress.compressVideo(
       (video as File).path,
       includeAudio: true,
     );
+    return compressed?.file?.readAsBytes();
   }
 }

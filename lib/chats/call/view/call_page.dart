@@ -4,11 +4,7 @@ import 'package:flutter_instagram_offline_first_clone/app/bloc/app_bloc.dart';
 import 'package:flutter_instagram_offline_first_clone/chats/call/widgets/call_screen.dart';
 
 class CallPage extends StatelessWidget {
-  const CallPage({
-    required this.chatId,
-    this.isVideo = true,
-    super.key,
-  });
+  const CallPage({required this.chatId, this.isVideo = true, super.key});
 
   final String chatId;
   final bool isVideo;

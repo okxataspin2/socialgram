@@ -29,7 +29,8 @@ class CloudinaryService {
     }
 
     final folder = _getFolder(category, userId);
-    final publicId = customPublicId ?? '${userId}_${DateTime.now().millisecondsSinceEpoch}';
+    final publicId =
+        customPublicId ?? '${userId}_${DateTime.now().millisecondsSinceEpoch}';
 
     final uri = Uri.parse(
       'https://api.cloudinary.com/v1_1/$_cloudName/image/upload',

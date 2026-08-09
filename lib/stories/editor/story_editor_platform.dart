@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import 'story_editor_native.dart' if (dart.library.html) 'story_editor_web.dart'
+import 'story_editor_native.dart'
+    if (dart.library.html) 'story_editor_web.dart'
     as impl;
 
 /// Returns the story editor screen for the current platform.
@@ -13,5 +14,4 @@ import 'story_editor_native.dart' if (dart.library.html) 'story_editor_web.dart'
 Widget storyEditorScreen({
   required BuildContext context,
   required dynamic Function(String)? onDone,
-}) =>
-    impl.storyEditorScreen(context: context, onDone: onDone);
+}) => impl.storyEditorScreen(context: context, onDone: onDone);

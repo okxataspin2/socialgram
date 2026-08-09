@@ -201,9 +201,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: isDark
-                                ? AppColors.white
-                                : AppColors.black,
+                            color: isDark ? AppColors.white : AppColors.black,
                           ),
                         ),
                       ],

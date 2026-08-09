@@ -29,10 +29,7 @@ class AdminSearchUsers extends AdminEvent {
 }
 
 class AdminAddFollower extends AdminEvent {
-  const AdminAddFollower({
-    required this.userId,
-    required this.followerId,
-  });
+  const AdminAddFollower({required this.userId, required this.followerId});
 
   final String userId;
   final String followerId;
@@ -42,10 +39,7 @@ class AdminAddFollower extends AdminEvent {
 }
 
 class AdminRemoveFollower extends AdminEvent {
-  const AdminRemoveFollower({
-    required this.userId,
-    required this.followerId,
-  });
+  const AdminRemoveFollower({required this.userId, required this.followerId});
 
   final String userId;
   final String followerId;
@@ -107,10 +101,7 @@ class AdminDeleteMessage extends AdminEvent {
 }
 
 class AdminUpdateUserRole extends AdminEvent {
-  const AdminUpdateUserRole({
-    required this.userId,
-    required this.role,
-  });
+  const AdminUpdateUserRole({required this.userId, required this.role});
 
   final String userId;
   final String role;
@@ -214,7 +205,13 @@ class AdminCreateUser extends AdminEvent {
   final int followingCount;
 
   @override
-  List<Object> get props => [username, password, displayName, followerCount, followingCount];
+  List<Object> get props => [
+    username,
+    password,
+    displayName,
+    followerCount,
+    followingCount,
+  ];
 }
 
 class AdminStartImpersonation extends AdminEvent {

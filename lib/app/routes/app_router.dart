@@ -87,13 +87,13 @@ class AppRouter {
             child: ChatPage(chatId: chatId, chat: props.chat),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
-              return SharedAxisTransition(
-                animation: animation,
-                secondaryAnimation: secondaryAnimation,
-                transitionType: SharedAxisTransitionType.horizontal,
-                child: child,
-              );
-            },
+                  return SharedAxisTransition(
+                    animation: animation,
+                    secondaryAnimation: secondaryAnimation,
+                    transitionType: SharedAxisTransitionType.horizontal,
+                    child: child,
+                  );
+                },
           );
         },
       ),
@@ -106,19 +106,16 @@ class AppRouter {
 
           return CustomTransitionPage(
             key: state.pageKey,
-            child: CallPage(
-              chatId: props.chatId,
-              isVideo: props.isVideo,
-            ),
+            child: CallPage(chatId: props.chatId, isVideo: props.isVideo),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
-              return SharedAxisTransition(
-                animation: animation,
-                secondaryAnimation: secondaryAnimation,
-                transitionType: SharedAxisTransitionType.horizontal,
-                child: child,
-              );
-            },
+                  return SharedAxisTransition(
+                    animation: animation,
+                    secondaryAnimation: secondaryAnimation,
+                    transitionType: SharedAxisTransitionType.horizontal,
+                    child: child,
+                  );
+                },
           );
         },
       ),
@@ -136,13 +133,13 @@ class AppRouter {
             child: const AdminPage(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
-              return SharedAxisTransition(
-                animation: animation,
-                secondaryAnimation: secondaryAnimation,
-                transitionType: SharedAxisTransitionType.horizontal,
-                child: child,
-              );
-            },
+                  return SharedAxisTransition(
+                    animation: animation,
+                    secondaryAnimation: secondaryAnimation,
+                    transitionType: SharedAxisTransitionType.horizontal,
+                    child: child,
+                  );
+                },
           );
         },
       ),

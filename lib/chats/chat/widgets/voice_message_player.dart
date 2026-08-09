@@ -90,7 +90,8 @@ class _VoiceMessagePlayerState extends State<VoiceMessagePlayer> {
     try {
       // Voice messages are stored as private storage paths; resolve a
       // short-lived signed URL right before playback.
-      final url = await VoiceMessageService.getSignedUrl(widget.voiceUrl) ??
+      final url =
+          await VoiceMessageService.getSignedUrl(widget.voiceUrl) ??
           widget.voiceUrl;
 
       await _audioPlayer.setUrl(url);
@@ -117,8 +118,8 @@ class _VoiceMessagePlayerState extends State<VoiceMessagePlayer> {
   }
 
   String _formatDuration() {
-    final duration = _audioPlayer.duration ??
-        Duration(seconds: widget.duration ?? 0);
+    final duration =
+        _audioPlayer.duration ?? Duration(seconds: widget.duration ?? 0);
     final minutes = duration.inMinutes;
     final seconds = duration.inSeconds % 60;
     return '${minutes.toString().padLeft(2, '0')}:'
@@ -137,8 +138,9 @@ class _VoiceMessagePlayerState extends State<VoiceMessagePlayer> {
   @override
   Widget build(BuildContext context) {
     final progress = _duration > 0 ? _position / _duration : 0.0;
-    final effectiveTextColor =
-        widget.isMine ? AppColors.white : AppColors.black;
+    final effectiveTextColor = widget.isMine
+        ? AppColors.white
+        : AppColors.black;
 
     return Row(
       children: [

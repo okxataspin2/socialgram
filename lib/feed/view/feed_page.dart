@@ -108,7 +108,9 @@ class _FeedViewState extends State<FeedView> {
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
               SliverOverlapAbsorber(
-                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                  context,
+                ),
                 sliver: FeedAppBar(innerBoxIsScrolled: innerBoxIsScrolled),
               ),
             ];

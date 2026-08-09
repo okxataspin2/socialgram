@@ -38,13 +38,7 @@ class AdminView extends StatefulWidget {
 class _AdminViewState extends State<AdminView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  static const _tabs = [
-    'Dashboard',
-    'Users',
-    'Messages',
-    'Posts',
-    'Approval',
-  ];
+  static const _tabs = ['Dashboard', 'Users', 'Messages', 'Posts', 'Approval'];
 
   @override
   void initState() {
@@ -120,9 +114,7 @@ class _AdminViewState extends State<AdminView>
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
-                              color: isDark
-                                  ? AppColors.white
-                                  : AppColors.black,
+                              color: isDark ? AppColors.white : AppColors.black,
                             ),
                           ),
                           const Spacer(),
@@ -139,9 +131,9 @@ class _AdminViewState extends State<AdminView>
                                 selected: true,
                                 selectedColor: Colors.orange,
                                 onTap: () {
-                                  context
-                                      .read<AdminBloc>()
-                                      .add(AdminStopImpersonation());
+                                  context.read<AdminBloc>().add(
+                                    AdminStopImpersonation(),
+                                  );
                                 },
                                 icon: const Icon(
                                   Icons.stop_circle,
@@ -155,13 +147,11 @@ class _AdminViewState extends State<AdminView>
                           IconButton(
                             icon: Icon(
                               Icons.logout,
-                              color: isDark
-                                  ? AppColors.white
-                                  : AppColors.black,
+                              color: isDark ? AppColors.white : AppColors.black,
                             ),
-                            onPressed: () => context
-                                .read<AppBloc>()
-                                .add(const AppLogoutRequested()),
+                            onPressed: () => context.read<AppBloc>().add(
+                              const AppLogoutRequested(),
+                            ),
                           ),
                         ],
                       ),
@@ -170,15 +160,11 @@ class _AdminViewState extends State<AdminView>
                     TabBar(
                       controller: _tabController,
                       isScrollable: true,
-                      labelPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                      ),
+                      labelPadding: const EdgeInsets.symmetric(horizontal: 16),
                       indicatorColor: isDark
                           ? AppColors.white
                           : AppColors.black,
-                      labelColor: isDark
-                          ? AppColors.white
-                          : AppColors.black,
+                      labelColor: isDark ? AppColors.white : AppColors.black,
                       unselectedLabelColor: isDark
                           ? AppColors.white.withOpacity(0.4)
                           : AppColors.black.withOpacity(0.4),
@@ -198,10 +184,7 @@ class _AdminViewState extends State<AdminView>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: isDark
-                ? [
-                    AppColors.black,
-                    AppColors.black.withOpacity(0.95),
-                  ]
+                ? [AppColors.black, AppColors.black.withOpacity(0.95)]
                 : [
                     AppColors.blue.withOpacity(0.05),
                     AppColors.white.withOpacity(0.3),

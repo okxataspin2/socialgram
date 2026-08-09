@@ -31,10 +31,7 @@ class VoiceMessageService {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     _recordingPath = '${directory.path}/voice_$timestamp.m4a';
 
-    await _recorder.start(
-      const RecordConfig(),
-      path: _recordingPath!,
-    );
+    await _recorder.start(const RecordConfig(), path: _recordingPath!);
   }
 
   /// Stops recording and returns the file path.

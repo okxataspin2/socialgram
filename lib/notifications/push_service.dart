@@ -20,9 +20,8 @@ class PushService {
       MessageType.image => '📷 Photo',
       MessageType.video => '🎥 Video',
       MessageType.voice => '🎤 Voice message',
-      MessageType.text => message.message.isEmpty
-          ? 'Sent you a message'
-          : message.message,
+      MessageType.text =>
+        message.message.isEmpty ? 'Sent you a message' : message.message,
     };
 
     try {

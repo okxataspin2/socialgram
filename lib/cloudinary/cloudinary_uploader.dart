@@ -1,4 +1,3 @@
-
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_instagram_offline_first_clone/cloudinary/cloudinary_service.dart';
@@ -56,7 +55,10 @@ class CloudinaryUploader {
     required int durationSeconds,
   }) async {
     if (durationSeconds > CloudinaryService.maxStoryDuration) {
-      _showError(context, 'Video must be ${CloudinaryService.maxStoryDuration} seconds or less');
+      _showError(
+        context,
+        'Video must be ${CloudinaryService.maxStoryDuration} seconds or less',
+      );
       return null;
     }
 
@@ -83,7 +85,10 @@ class CloudinaryUploader {
     required int durationSeconds,
   }) async {
     if (durationSeconds > CloudinaryService.maxStoryDuration) {
-      _showError(context, 'Story must be ${CloudinaryService.maxStoryDuration} seconds or less');
+      _showError(
+        context,
+        'Story must be ${CloudinaryService.maxStoryDuration} seconds or less',
+      );
       return null;
     }
 
@@ -155,9 +160,9 @@ class CloudinaryUploader {
 
   static void _showError(BuildContext context, String message) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 }

@@ -13,8 +13,7 @@ import 'package:shared/shared.dart';
 Widget storyEditorScreen({
   required BuildContext context,
   required dynamic Function(String)? onDone,
-}) =>
-    const WebStoryComposer();
+}) => const WebStoryComposer();
 
 /// Web story composer.
 ///
@@ -89,10 +88,7 @@ class _WebStoryComposerState extends State<WebStoryComposer> {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    context.l10n.uploadText,
-                    style: context.titleMedium,
-                  ),
+                  Text(context.l10n.uploadText, style: context.titleMedium),
                   gapH24,
                   Tappable.faded(
                     onTap: _pick,

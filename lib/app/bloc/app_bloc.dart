@@ -47,10 +47,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       emit(AppState.authenticated(user));
 
       unawaited(
-        ZegoVideoService.init(
-          userId: user.id,
-          userName: user.displayFullName,
-        ),
+        ZegoVideoService.init(userId: user.id, userName: user.displayFullName),
       );
 
       try {
@@ -113,8 +110,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   /// Updates the user's password via the UserRepository.
   /// Throws an exception if the update fails.
-  Future<void> updateUser({
-    String? password,
-  }) =>
+  Future<void> updateUser({String? password}) =>
       _userRepository.updateUser(password: password);
 }

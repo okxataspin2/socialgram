@@ -583,10 +583,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: () {
             Navigator.of(context).push<void>(
               MaterialPageRoute(
-                builder: (_) => CallPage(
-                  chatId: chatId,
-                  isVideo: true,
-                ),
+                builder: (_) => CallPage(chatId: chatId, isVideo: true),
               ),
             );
           },
@@ -596,10 +593,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: () {
             Navigator.of(context).push<void>(
               MaterialPageRoute(
-                builder: (_) => CallPage(
-                  chatId: chatId,
-                  isVideo: false,
-                ),
+                builder: (_) => CallPage(chatId: chatId, isVideo: false),
               ),
             );
           },

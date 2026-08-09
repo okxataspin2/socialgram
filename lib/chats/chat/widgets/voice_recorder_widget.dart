@@ -60,11 +60,7 @@ class _VoiceRecorderWidgetState extends State<VoiceRecorderWidget>
       setState(() => _isRecording = true);
       unawaited(_recordAnimation.repeat(reverse: true));
     } catch (error, stackTrace) {
-      logE(
-        'Failed to start recording',
-        error: error,
-        stackTrace: stackTrace,
-      );
+      logE('Failed to start recording', error: error, stackTrace: stackTrace);
 
       if (!mounted) return;
       openSnackbar(
@@ -115,20 +111,16 @@ class _VoiceRecorderWidgetState extends State<VoiceRecorderWidget>
 
       if (!mounted) return;
       context.read<ChatBloc>().add(
-            ChatSendMessageRequested(
-              message: message,
-              receiver: widget.receiver,
-              sender: user,
-            ),
-          );
+        ChatSendMessageRequested(
+          message: message,
+          receiver: widget.receiver,
+          sender: user,
+        ),
+      );
 
       toggleLoadingIndeterminate(enable: false);
       if (!mounted) return;
-      openSnackbar(
-        const SnackbarMessage.success(
-          title: 'Voice message sent',
-        ),
-      );
+      openSnackbar(const SnackbarMessage.success(title: 'Voice message sent'));
     } catch (error, stackTrace) {
       logE(
         'Failed to send voice message',
@@ -172,8 +164,9 @@ class _VoiceRecorderWidgetState extends State<VoiceRecorderWidget>
               child: AnimatedBuilder(
                 animation: _recordAnimation,
                 builder: (context, child) {
-                  final scale =
-                      _isRecording ? 1 + (_recordAnimation.value * 0.2) : 1.0;
+                  final scale = _isRecording
+                      ? 1 + (_recordAnimation.value * 0.2)
+                      : 1.0;
                   return Transform.scale(
                     scale: scale,
                     child: Icon(

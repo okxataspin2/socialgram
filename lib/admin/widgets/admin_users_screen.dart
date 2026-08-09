@@ -44,9 +44,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             : state.searchResults;
 
         if (_selectedRole != null) {
-          users = users
-              .where((u) => u.role == _selectedRole)
-              .toList();
+          users = users.where((u) => u.role == _selectedRole).toList();
         }
         if (_suspendedFilter != null) {
           users = users
@@ -71,7 +69,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 children: [
                   GlassChip(
                     label: Text(
-                      _selectedRole == null ? 'All Roles' : _selectedRole!.toUpperCase(),
+                      _selectedRole == null
+                          ? 'All Roles'
+                          : _selectedRole!.toUpperCase(),
                     ),
                     selected: _selectedRole != null,
                     onTap: () => _showRoleFilterDialog(),
@@ -83,8 +83,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                       _suspendedFilter == null
                           ? 'All Status'
                           : _suspendedFilter!
-                              ? 'Suspended'
-                              : 'Active',
+                          ? 'Suspended'
+                          : 'Active',
                     ),
                     selected: _suspendedFilter != null,
                     onTap: () => _showStatusFilterDialog(),
@@ -109,17 +109,17 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               child: state.status == AdminStatus.loading
                   ? const Center(child: CircularProgressIndicator())
                   : state.status == AdminStatus.failure
-                      ? _buildFailureState(isDark)
-                      : users.isEmpty
-                          ? _buildEmptyState(isDark)
-                          : ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          itemCount: users.length,
-                          itemBuilder: (context, index) {
-                            final user = users[index];
-                            return _UserTile(user: user);
-                          },
-                        ),
+                  ? _buildFailureState(isDark)
+                  : users.isEmpty
+                  ? _buildEmptyState(isDark)
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: users.length,
+                      itemBuilder: (context, index) {
+                        final user = users[index];
+                        return _UserTile(user: user);
+                      },
+                    ),
             ),
           ],
         );
@@ -199,11 +199,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ...[
-              (null, 'All Roles'),
-              ('admin', 'Admin'),
-              ('user', 'User'),
-            ].map((entry) {
+            ...[(null, 'All Roles'), ('admin', 'Admin'), ('user', 'User')].map((
+              entry,
+            ) {
               final (value, label) = entry;
               return ListTile(
                 title: Text(label),
@@ -232,11 +230,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ...[
-              (null, 'All'),
-              (false, 'Active'),
-              (true, 'Suspended'),
-            ].map((entry) {
+            ...[(null, 'All'), (false, 'Active'), (true, 'Suspended')].map((
+              entry,
+            ) {
               final (value, label) = entry;
               return ListTile(
                 title: Text(label),
@@ -331,9 +327,7 @@ class _UserTileState extends State<_UserTile> {
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
-                            color: isDark
-                                ? AppColors.white
-                                : AppColors.black,
+                            color: isDark ? AppColors.white : AppColors.black,
                           ),
                         ),
                         Text(
@@ -512,7 +506,8 @@ class _ActionRow extends StatelessWidget {
             Icon(
               icon,
               size: 20,
-              color: iconColor ??
+              color:
+                  iconColor ??
                   (isDark
                       ? AppColors.white.withOpacity(0.6)
                       : AppColors.black.withOpacity(0.6)),
@@ -522,7 +517,8 @@ class _ActionRow extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: 14,
-                color: iconColor ??
+                color:
+                    iconColor ??
                     (isDark
                         ? AppColors.white.withOpacity(0.8)
                         : AppColors.black.withOpacity(0.8)),

@@ -80,20 +80,20 @@ class AdminState extends Equatable {
 
   @override
   List<Object> get props => [
-        status,
-        users,
-        searchResults,
-        messages,
-        messagesStatus,
-        posts,
-        postsStatus,
-        conversations,
-        conversationsStatus,
-        postsStats,
-        pendingPosts,
-        pendingPostsStatus,
-        autoApprove,
-        isImpersonating,
-        impersonatedUserId ?? '',
-      ];
+    status,
+    users,
+    searchResults,
+    messages,
+    messagesStatus,
+    posts,
+    postsStatus,
+    conversations,
+    conversationsStatus,
+    postsStats,
+    pendingPosts,
+    pendingPostsStatus,
+    autoApprove,
+    isImpersonating,
+    impersonatedUserId ?? '',
+  ];
 }

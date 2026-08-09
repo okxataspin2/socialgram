@@ -62,12 +62,7 @@ class _CallScreenState extends State<CallScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            call,
-          ],
-        ),
+        child: Stack(fit: StackFit.expand, children: [call]),
       ),
     );
   }

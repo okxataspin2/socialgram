@@ -6,10 +6,7 @@ import 'package:flutter_instagram_offline_first_clone/app/app.dart';
 import 'package:intl/intl.dart';
 
 class AdminMessageThreadView extends StatelessWidget {
-  const AdminMessageThreadView({
-    required this.messageId,
-    super.key,
-  });
+  const AdminMessageThreadView({required this.messageId, super.key});
 
   final String messageId;
 
@@ -40,9 +37,7 @@ class AdminMessageThreadView extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.delete_sweep),
             onPressed: () {
-              context.read<AdminBloc>().add(
-                AdminDeleteMessage(messageId),
-              );
+              context.read<AdminBloc>().add(AdminDeleteMessage(messageId));
               Navigator.of(context).pop();
             },
           ),
@@ -115,8 +110,7 @@ class AdminMessageThreadView extends StatelessWidget {
                       borderRadius: 16,
                       padding: const EdgeInsets.all(12),
                       color: isMe
-                          ? AppColors.blue
-                              .withValues(alpha: isDark ? 0.2 : 0.1)
+                          ? AppColors.blue.withValues(alpha: isDark ? 0.2 : 0.1)
                           : null,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,12 +123,17 @@ class AdminMessageThreadView extends StatelessWidget {
                                 fontSize: 12,
                                 color: isMe
                                     ? (isDark
-                                        ? AppColors.blue.withValues(alpha: 0.8)
-                                        : AppColors.blue)
+                                          ? AppColors.blue.withValues(
+                                              alpha: 0.8,
+                                            )
+                                          : AppColors.blue)
                                     : (isDark
-                                        ? AppColors.white.withValues(alpha: 0.6)
-                                        : AppColors.black.withValues(
-                                            alpha: 0.6)),
+                                          ? AppColors.white.withValues(
+                                              alpha: 0.6,
+                                            )
+                                          : AppColors.black.withValues(
+                                              alpha: 0.6,
+                                            )),
                               ),
                             ),
                           const SizedBox(height: 4),
@@ -142,16 +141,12 @@ class AdminMessageThreadView extends StatelessWidget {
                             msg.message,
                             style: TextStyle(
                               fontSize: 14,
-                              color: isDark
-                                  ? AppColors.white
-                                  : AppColors.black,
+                              color: isDark ? AppColors.white : AppColors.black,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            DateFormat.yMd()
-                                .add_jm()
-                                .format(msg.createdAt),
+                            DateFormat.yMd().add_jm().format(msg.createdAt),
                             style: TextStyle(
                               fontSize: 10,
                               color: isDark

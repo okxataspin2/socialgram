@@ -21,7 +21,7 @@ class AppView extends StatelessWidget {
               duration: 350.ms,
               child: MaterialApp.router(
                 debugShowCheckedModeBanner: false,
-                 title: 'SocialGram',
+                title: 'SocialGram',
                 routerConfig: routerConfig,
                 builder: (context, child) {
                   WidgetsBinding.instance.addPostFrameCallback(

@@ -39,13 +39,15 @@ class _AdminCreateUserScreenState extends State<AdminCreateUserScreen> {
   void _createUser() {
     if (!_formKey.currentState!.validate()) return;
     final bloc = context.read<AdminBloc>();
-    bloc.add(AdminCreateUser(
-      username: _usernameController.text.trim(),
-      password: _passwordController.text,
-      displayName: _displayNameController.text.trim(),
-      followerCount: int.tryParse(_followerCountController.text) ?? 0,
-      followingCount: int.tryParse(_followingCountController.text) ?? 0,
-    ));
+    bloc.add(
+      AdminCreateUser(
+        username: _usernameController.text.trim(),
+        password: _passwordController.text,
+        displayName: _displayNameController.text.trim(),
+        followerCount: int.tryParse(_followerCountController.text) ?? 0,
+        followingCount: int.tryParse(_followingCountController.text) ?? 0,
+      ),
+    );
     Navigator.pop(context);
   }
 
@@ -164,8 +166,9 @@ class _AdminCreateUserScreenState extends State<AdminCreateUserScreen> {
                               : Icons.visibility_outlined,
                           size: 20,
                         ),
-                        onPressed: () =>
-                            setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
                       validator: (v) => v != null && v.length >= 6
                           ? null
@@ -195,8 +198,8 @@ class _AdminCreateUserScreenState extends State<AdminCreateUserScreen> {
                             keyboardType: TextInputType.number,
                             validator: (v) =>
                                 v != null && int.tryParse(v) != null
-                                    ? null
-                                    : 'Number',
+                                ? null
+                                : 'Number',
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -208,8 +211,8 @@ class _AdminCreateUserScreenState extends State<AdminCreateUserScreen> {
                             keyboardType: TextInputType.number,
                             validator: (v) =>
                                 v != null && int.tryParse(v) != null
-                                    ? null
-                                    : 'Number',
+                                ? null
+                                : 'Number',
                           ),
                         ),
                       ],
@@ -327,10 +330,7 @@ class _GlassFormField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(
-            color: _purple.withOpacity(0.5),
-            width: 1.5,
-          ),
+          borderSide: BorderSide(color: _purple.withOpacity(0.5), width: 1.5),
         ),
         labelStyle: TextStyle(
           color: isDark

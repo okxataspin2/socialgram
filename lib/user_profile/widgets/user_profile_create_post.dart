@@ -81,16 +81,10 @@ class _CreatePostPageState extends State<CreatePostPage> {
     _media = picked
         .map(
           (e) => e.isImage
-              ? MemoryImageMedia(
-                  bytes: e.bytes ?? Uint8List(0),
-                  id: uuid.v4(),
-                )
+              ? MemoryImageMedia(bytes: e.bytes ?? Uint8List(0), id: uuid.v4())
               : MemoryVideoMedia(
                   id: uuid.v4(),
-                  file: XFile(
-                    _tempPathFor(e),
-                    name: e.fileName,
-                  ),
+                  file: XFile(_tempPathFor(e), name: e.fileName),
                 ),
         )
         .toList();

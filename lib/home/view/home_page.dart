@@ -12,7 +12,6 @@ import 'package:flutter_instagram_offline_first_clone/stories/stories.dart';
 import 'package:flutter_instagram_offline_first_clone/user_profile/user_profile.dart';
 import 'package:go_router/go_router.dart';
 import 'package:posts_repository/posts_repository.dart';
-import 'package:shared/shared.dart';
 import 'package:stories_repository/stories_repository.dart';
 import 'package:user_repository/user_repository.dart';
 

@@ -8,7 +8,9 @@ import 'package:go_router/go_router.dart';
 import 'package:instagram_blocks_ui/instagram_blocks_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:inview_notifier_list/inview_notifier_list.dart';
-import 'package:shared/shared.dart';class MessageBubbleContent extends StatelessWidget {
+import 'package:shared/shared.dart';
+
+class MessageBubbleContent extends StatelessWidget {
   const MessageBubbleContent({
     required this.message,
     this.onRepliedMessageTap,
@@ -71,45 +73,45 @@ import 'package:shared/shared.dart';class MessageBubbleContent extends Stateless
         ] else
           ...AppColors.primaryMessageBubbleGradient,
       ],
-       child: switch ((
+      child: switch ((
         isSharedPostUnavailable,
         hasSharedPost,
         isSharedPostReel,
         message.type == MessageType.voice,
       )) {
         (true, _, _, _) => MessageSharedPostUnavailable(
-            message: message,
-            isEdited: isEdited,
-            effectiveTextColor: effectiveTextColor,
-          ),
+          message: message,
+          isEdited: isEdited,
+          effectiveTextColor: effectiveTextColor,
+        ),
         (false, true, true, _) => MessageSharedReel(
-            sharedPost: sharedPost!,
-            effectiveTextColor: effectiveTextColor,
-            isEdited: isEdited,
-            message: message,
-          ),
+          sharedPost: sharedPost!,
+          effectiveTextColor: effectiveTextColor,
+          isEdited: isEdited,
+          message: message,
+        ),
         (false, true, false, _) => MessageSharedPost(
-            sharedPost: sharedPost!,
-            effectiveTextColor: effectiveTextColor,
-            isEdited: isEdited,
-            message: message,
-          ),
+          sharedPost: sharedPost!,
+          effectiveTextColor: effectiveTextColor,
+          isEdited: isEdited,
+          message: message,
+        ),
         (_, _, _, true) => VoiceMessageBubble(
-            message: message,
-            isMine: isMine,
-            isEdited: isEdited,
-            effectiveTextColor: effectiveTextColor,
-          ),
+          message: message,
+          isMine: isMine,
+          isEdited: isEdited,
+          effectiveTextColor: effectiveTextColor,
+        ),
         (false, false, _, false) => MessageContentView(
-            message: message,
-            isMine: isMine,
-            isEdited: isEdited,
-            hasAttachments: hasAttachments,
-            effectiveTextColor: effectiveTextColor,
-            onRepliedMessageTap: onRepliedMessageTap,
-            hasRepliedMessage: hasRepliedMessage,
-            displayBottomStatuses: displayBottomStatuses,
-          ),
+          message: message,
+          isMine: isMine,
+          isEdited: isEdited,
+          hasAttachments: hasAttachments,
+          effectiveTextColor: effectiveTextColor,
+          onRepliedMessageTap: onRepliedMessageTap,
+          hasRepliedMessage: hasRepliedMessage,
+          displayBottomStatuses: displayBottomStatuses,
+        ),
       },
     );
   }
@@ -511,10 +513,7 @@ class VoiceMessageBubble extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              VoiceMessagePlayer(
-                voiceUrl: message.message,
-                isMine: isMine,
-              ),
+              VoiceMessagePlayer(voiceUrl: message.message, isMine: isMine),
               const Gap.v(AppSpacing.sm),
               MessageStatuses(isEdited: isEdited, message: message),
             ],

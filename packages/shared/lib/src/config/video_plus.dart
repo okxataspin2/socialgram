@@ -19,6 +19,6 @@ class VideoPlus {
   static Future<Uint8List?> getVideoThumbnail(Object file) =>
       impl.VideoPlus.getVideoThumbnail(file);
 
-  static Future<dynamic> compressVideo(Object file) =>
+  static Future<Uint8List?> compressVideo(Object file) =>
       impl.VideoPlus.compressVideo(file);
 }

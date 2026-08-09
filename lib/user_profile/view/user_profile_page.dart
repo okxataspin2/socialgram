@@ -362,17 +362,15 @@ class UserProfileSettingsButton extends StatelessWidget {
     return Tappable.faded(
       onTap: () => context
           .showListOptionsModal(
-               options: [
-               ModalOption(child: const LocaleModalOption()),
-               ModalOption(child: const ThemeSelectorModalOption()),
-               ModalOption(child: const ChangePasswordModalOption()),
-               if (AdminGuard.isAdmin(context))
-                 ModalOption(child: const AdminModalOption()),
-               ModalOption(child: const LogoutModalOption()),
-               ModalOption(
-                 child: const RWAgencyBrandingModalOption(),
-               ),
-             ],
+            options: [
+              ModalOption(child: const LocaleModalOption()),
+              ModalOption(child: const ThemeSelectorModalOption()),
+              ModalOption(child: const ChangePasswordModalOption()),
+              if (AdminGuard.isAdmin(context))
+                ModalOption(child: const AdminModalOption()),
+              ModalOption(child: const LogoutModalOption()),
+              ModalOption(child: const RWAgencyBrandingModalOption()),
+            ],
           )
           .then((option) {
             if (option == null) return;
@@ -441,9 +439,7 @@ class ChangePasswordModalOption extends StatelessWidget {
       child: ListTile(
         title: Text(
           'Change Password',
-          style: TextStyle(
-            color: isDark ? AppColors.white : AppColors.black,
-          ),
+          style: TextStyle(color: isDark ? AppColors.white : AppColors.black),
         ),
         leading: Icon(
           Icons.lock_outline,
@@ -515,9 +511,7 @@ class ChangePasswordModalOption extends StatelessWidget {
               ),
               actions: [
                 TextButton(
-                  onPressed: isLoading
-                      ? null
-                      : () => Navigator.pop(context),
+                  onPressed: isLoading ? null : () => Navigator.pop(context),
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
@@ -529,8 +523,8 @@ class ChangePasswordModalOption extends StatelessWidget {
                           setState(() => isLoading = true);
                           try {
                             await context.read<AppBloc>().updateUser(
-                                  password: newPasswordController.text,
-                                );
+                              password: newPasswordController.text,
+                            );
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(

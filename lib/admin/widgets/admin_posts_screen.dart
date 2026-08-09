@@ -143,9 +143,7 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
-                            color: isDark
-                                ? AppColors.white
-                                : AppColors.black,
+                            color: isDark ? AppColors.white : AppColors.black,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -186,9 +184,9 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
                         ],
                         onSelected: (value) {
                           if (value == 'delete') {
-                            context
-                                .read<AdminBloc>()
-                                .add(AdminDeletePost(post.id));
+                            context.read<AdminBloc>().add(
+                              AdminDeletePost(post.id),
+                            );
                           }
                         },
                         icon: Icon(
