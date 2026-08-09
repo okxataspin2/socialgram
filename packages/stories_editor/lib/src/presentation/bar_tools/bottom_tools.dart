@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:stories_editor/src/domain/providers/notifiers/control_provider.dart';
 import 'package:stories_editor/src/domain/providers/notifiers/draggable_widget_notifier.dart';
 import 'package:stories_editor/src/domain/providers/notifiers/scroll_notifier.dart';
-import 'package:stories_editor/src/domain/sevices/save_as_image.dart';
+import 'package:stories_editor/src/domain/services/save_as_image.dart';
 import 'package:stories_editor/src/l10n/stories_editor_localization.dart';
 import 'package:stories_editor/src/presentation/widgets/animated_onTap_button.dart';
 

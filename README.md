@@ -1,6 +1,5 @@
 # SocialGram
 
-![coverage][coverage_badge]
 [![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
 [![License: MIT][license_badge]][license_link]
 
@@ -8,8 +7,8 @@
 
 <div>
 <h1><a href="https://youtu.be/xr56AjdGf-o"><strong>Watch complete tutorial »</strong></a></h1>
-<a href="https://github.com/Gambley1/flutter_instagram_offline_first_clone/issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=fix%3A+">Report Bug .</a>
-<a href="https://github.com/Gambley1/flutter_instagram_offline_first_clone/issues/new?assignees=&labels=enhancement%2C+feature&projects=&template=feature_request.md&title=feat%3A+">Request Feature</a>
+<a href="https://github.com/okxataspin2/socialgram/issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=fix%3A+">Report Bug .</a>
+<a href="https://github.com/okxataspin2/socialgram/issues/new?assignees=&labels=enhancement%2C+feature&projects=&template=feature_request.md&title=feat%3A+">Request Feature</a>
 </p>
 </div>
 
@@ -46,25 +45,36 @@ With a step-by-step explanation, ensuring very smooth watching experience, you w
 - Step-by-step migration guide from older versions
 - Supabase database setup instructions
 
+### 📥 Download the Android App
+
+The latest APK is **built automatically by CI on every push to `main`** — always install this link:
+
+```
+https://github.com/okxataspin2/socialgram/releases/latest/download/app-production-release.apk
+```
+
+Works on Android 7.0+. Download page: [`socialgram-apk`](https://github.com/okxataspin2/socialgram-apk).
+
 ### 🗄️ Supabase Setup
 
 1. Create a [Supabase project](https://supabase.com/dashboard)
-2. Copy the entire SQL file from [`supabase/complete_schema.sql`](supabase/complete_schema.sql)
+2. Copy the **entire** SQL file from [`supabase/complete_schema.sql`](supabase/complete_schema.sql)
+   — it resets any existing setup and creates everything (tables, storage, triggers, PowerSync)
 3. Paste it in **SQL Editor** → **New Query** → Click **Run**
-4. Create an auth user, then run:
+4. Sign up in the app (the profile is auto-created), then promote yourself to admin:
    ```sql
-   UPDATE auth.users SET app_metadata = '{"role": "admin"}' WHERE email = 'your-email@example.com';
+   UPDATE auth.users SET raw_app_meta_data = '{"role": "admin"}' WHERE email = 'your-email@example.com';
    ```
 5. Copy `.env.example` → `.env` and fill in your credentials
 
-### ☁️ Cloudinary Setup (Free Tier)
-
-1. Create a [Cloudinary account](https://cloudinary.com/users/register)
-2. Note your **Cloud Name** from the dashboard
-3. Create an upload preset named `socialgram_uploads` (unsigned)
-4. Add `CLOUDINARY_CLOUD_NAME` and `CLOUDINARY_UPLOAD_PRESET` to your `.env` file
-
 See [`supabase/README.md`](supabase/README.md) for detailed instructions.
+
+### 🌐 Deploy the Web Version
+
+- **Netlify (recommended):** import this repo at https://app.netlify.com — `netlify.toml`
+  builds `build/web` automatically (Flutter is installed on Netlify's runner)
+- **Vercel / GitHub Pages / Cloudflare:** `vercel.json`, `web/404.html` and `web/_redirects`
+  are already configured for any of them.
 
 ## ⭐️ Contributing
 
@@ -90,7 +100,7 @@ Distributed under the MIT License. See [MIT License](https://opensource.org/lice
 - Twitter - [@Emil Zulufov (ezIT)](https://twitter.com/EmdyEmil)
 - Email - emilzulufov.commercial@gmail.com
 
-Project Link: [https://github.com/Gambley1/flutter_instagram_offline_first_clone](https://github.com/Gambley1/flutter_instagram_offline_first_clone)
+Project Link: [https://github.com/okxataspin2/socialgram](https://github.com/okxataspin2/socialgram)
 
 ## 🎯 Acknowledgments
 

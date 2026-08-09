@@ -1,129 +1,89 @@
-# SocialGram - Supabase Setup Guide
+# SocialGram — Supabase Setup (Single-File)
 
-## Quick Start
+Everything needed to connect this app to a Supabase project lives in **one file**:
 
-1. Create a [Supabase project](https://supabase.com/dashboard)
-2. Go to **SQL Editor** → **New Query**
-3. **Copy & paste** the entire contents of `complete_schema.sql`
-4. Click **Run** (Play button)
-5. Wait ~30 seconds for completion
+```
+supabase/complete_schema.sql
+```
 
-That's it! Your database is fully set up.
+It's fully self-contained and **self-cleaning**: it drops any previous
+SocialGram tables, storage, triggers and accounts before recreating the
+entire database from scratch. You can run it on a fresh project **or** on an
+existing half-configured one.
 
-## Make First User Admin
+---
+
+## 1. Create the project
+
+1. Sign in at https://supabase.com/dashboard
+2. **New project** → pick a region close to you → create
+
+## 2. Run the schema (one time, ~30 seconds)
+
+1. Open your project → **SQL Editor** → **New query**
+2. Open `supabase/complete_schema.sql` from this repo and copy the **entire** contents
+   (or open: https://github.com/okxataspin2/socialgram/blob/main/supabase/complete_schema.sql)
+3. Paste → **Run**
+
+What it creates:
+- `profiles`, `posts`, `post_media`, `videos`, `images`, `comments`, `likes` (reactions),
+  `subscriptions` (follows), `conversations`, `participants`, `messages`, `attachments`,
+  `stories`, `calls`, `admin_settings`, `admin_audit_logs`, `user_roles`
+- Storage buckets: `avatars`, `posts`, `stories`, `messages` + all storage policies
+- Triggers: automatic `profiles` creation on signup (`handle_new_user`) — this must
+  exist or signup fails with "Database error saving new user"
+- Media cleanup triggers, performance indexes, PowerSync publication
+
+## 3. Give yourself admin access
+
+Sign up once in the app (your profile row is created automatically by the trigger),
+then in **SQL Editor** run:
 
 ```sql
-UPDATE auth.users 
-SET raw_app_meta_data = '{"role": "admin"}' 
-WHERE email = 'your-admin@email.com';
+UPDATE auth.users
+SET raw_app_meta_data = '{"role": "admin"}'
+WHERE email = 'your-email@example.com';
 ```
 
-> Use `raw_app_meta_data` (not `app_metadata`) — newer Supabase versions removed
-> the `app_metadata` column. Sign out and back in after running this, so the
-> JWT (which the app reads via `user.appMetadata['role']`) is refreshed.
+> Note: use `raw_app_meta_data` — newer Supabase versions renamed/removed `app_metadata`.
 
-## Environment Variables
+## 4. Copy the app environment
 
-Copy `.env.example` to `.env` and fill in your credentials:
-
-```env
-SUPABASE_URL=https://[project-ref].supabase.co
-SUPABASE_ANON_KEY=your-anon-key
-POWERSYNC_URL=your-powersync-url
-FCM_SERVER_KEY=your-fcm-server-key
-IOS_CLIENT_ID=your-ios-client-id
-WEB_CLIENT_ID=your-web-client-id
-FCM_PROJECT_ID=your-firebase-project-id
-FCM_SERVICE_ACCOUNT_JSON=your-full-service-account-json
-CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
-CLOUDINARY_UPLOAD_PRESET=socialgram_uploads
-```
-
-## Cloudinary Setup (Free Tier)
-
-### 1. Create Account
-- Go to [Cloudinary.com](https://cloudinary.com/users/register)
-- Note your **Cloud Name** from the dashboard
-
-### 2. Upload Preset
-- Go to **Settings** → **Upload** → **Upload presets**
-- Create new preset: `socialgram_uploads`
-- Set to **Unsigned** (for client-side uploads)
-- In **Upload Options** set:
-  - `folder` = `socialgram`
-  - `resource_type` = `auto` (handles both images and videos)
-- Save preset
-
-### 3. Environment Variables
-Add these to your `.env` file:
-```env
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_UPLOAD_PRESET=socialgram_uploads
-```
-
-### Free Tier Capacity
-- **25 GB** storage (thousands of photos)
-- **25 GB** bandwidth (thousands of views)
-- **1,000 transformations** per month
-- **Unlimited** files (no hard count limit)
-
-Perfect for **1,000-5,000 active users**.
-
-## File Limits (Enforced in App)
-
-| Content Type | Max Size | Additional Limits |
-|-------------|----------|-------------------|
-| Profile Picture | 5 MB | - |
-| Post Photo | 5 MB | - |
-| Post Video | 50 MB | 20 seconds max |
-| Story Photo | 5 MB | Auto-delete after 24h |
-| Story Video | 50 MB | 20 seconds max, auto-delete |
-| Chat Media | 5 MB | - |
-
-## Folder Structure (Cloudinary)
+The committed environment files already point at this project's values:
+- `packages/env/.env.prod` — used by production builds (web + APK)
+- `packages/env/.env.dev` — used by local development (`lib/main_development.dart`)
 
 ```
-/socialgram/
-├── users/
-│   └── {userId}/profile.jpg
-├── posts/
-│   ├── images/{postId}.jpg
-│   └── videos/{postId}.mp4
-├── stories/
-│   ├── images/{storyId}.jpg
-│   └── videos/{storyId}.mp4
-└── chat/
-    ├── group_chats/
-    │   └── {chatId}/{messageId}.jpg
-    └── direct_chats/
-        └── {chatId}/{messageId}.jpg
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+POWERSYNC_URL=          # from the PowerSync project (console.powersync.com)
+IOS_CLIENT_ID=          # Google OAuth (iOS)
+WEB_CLIENT_ID=          # Google OAuth (web)
+FCM_PROJECT_ID=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_UPLOAD_PRESET=
+ZEGO_APP_ID=
+ZEGO_APP_SIGN=
 ```
 
-## Storage Optimization
+After editing an env file, regenerate the compiled constants:
 
-Cloudinary automatically:
-- Converts to WebP/AVIF for browsers
-- Applies auto-quality compression (~60-70% smaller)
-- Resizes for responsive design
-- Generates multiple thumbnail sizes
-- Serves via global CDN (200+ locations)
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
 
-## 📞 Voice Messages & Calls
+## PowerSync
 
-Voice messages are stored in Supabase Storage bucket:
-- **Bucket**: `messages` (private, `public = false`)
-- **Folder structure**: `messages/{conversationId}/voice_{uuid}.m4a`
-- **Access**: Participants only (RLS on `storage.objects`); playback uses short-lived signed URLs via `createSignedUrl` (10-minute expiry), resolved right before playback in the app
+Create a PowerSync instance at https://console.powersync.com and point it at a read-only
+Postgres connection for this Supabase project. The `powersync` publication created by the
+schema is what `POWERSYNC_URL` consumes for offline sync.
 
-Video/audio calls use:
-- **ZEGOCLOUD**: `ZegoUIKitPrebuiltCall` + `ZegoUIKitPrebuiltCallInvitationService` (free tier, requires `ZEGO_APP_ID`/`ZEGO_APP_SIGN` in env)
-- **Call history**: Stored in `calls` table (synced via PowerSync)
+## Troubleshooting
 
-## 🏁 Production Checklist
-
-- [ ] Set up Cloudinary account
-- [ ] Create upload preset
-- [ ] Configure authentication providers
-- [ ] Set your first admin user
-- [ ] Copy `.env.example` → `.env` with real credentials
-- [ ] Set up ZEGOCLOUD (required) for video calls
+| Symptom | Cause / Fix |
+|---|---|
+| `Database error saving new user` | Missing `handle_new_user` trigger → re-run `complete_schema.sql` (STEP 0 resets) |
+| Uploads fail with "Something went wrong!" | Missing storage buckets/policies → re-run `complete_schema.sql` |
+| `relation does not exist` | Old partial setup → re-run `complete_schema.sql` (STEP 0 wipes it) |
+| `column users.app_metadata does not exist` | Use `raw_app_meta_data` (see Step 3) |
+| Login works, feed empty | PowerSync URL missing/invalid → fix `POWERSYNC_URL` + run `dart run powersync:setup_web` for web |

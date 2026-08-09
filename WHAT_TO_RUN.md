@@ -2,7 +2,7 @@
 
 > Open a **terminal**: press **Ctrl+Alt+T**. Work from the project folder:
 > ```
-> cd /home/rhythmthebillio/Videos/flutter-instagram-offline-first-clone-main/flutter-instagram-offline-first-clone-main
+> cd <your-project-folder>  # e.g. ~/socialgram
 > ```
 
 ---
