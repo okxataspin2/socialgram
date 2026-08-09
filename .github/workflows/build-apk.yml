@@ -33,7 +33,7 @@ jobs:
         run: flutter build apk --release -t lib/main_production.dart --flavor production
 
       - name: Publish APK download
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: apk-latest
           prerelease: false
