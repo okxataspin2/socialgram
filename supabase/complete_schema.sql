@@ -74,9 +74,10 @@ drop function if exists public.clear_posts_objects() cascade;
 drop function if exists public.handle_delete_story_media() cascade;
 drop function if exists public.clear_stories_objects() cascade;
 
--- Wipe storage contents and buckets (recreated in STEP 2)
-delete from storage.objects;
-delete from storage.buckets;
+-- Wipe storage contents and buckets (recreated in STEP 2).
+-- Direct SQL deletes on storage.objects/buckets are rejected by Supabase
+-- ("Use the Storage API instead"); buckets left in place are upserted in
+-- STEP 2, so reset stays idempotent without touching storage rows.
 
 -- Drop the PowerSync publication so it can be recreated cleanly
 drop publication if exists powersync;
@@ -95,10 +96,12 @@ create extension if not exists "pgcrypto" schema "extensions";
 -- ============================================================================
 -- STEP 2: Create Storage Buckets
 -- ============================================================================
-insert into storage.buckets (id, name) values ('avatars', 'avatars');
-insert into storage.buckets (id, name) values ('posts', 'posts');
-insert into storage.buckets (id, name) values ('stories', 'stories');
-insert into storage.buckets (id, name) values ('messages', 'messages');
+insert into storage.buckets (id, name) values
+  ('avatars', 'avatars'),
+  ('posts', 'posts'),
+  ('stories', 'stories'),
+  ('messages', 'messages')
+on conflict (id) do update set name = excluded.name;
 
 -- ============================================================================
 -- STEP 3: Create Storage Policies
@@ -709,10 +712,14 @@ language plpgsql
 security definer set search_path = public
 as $$
 begin
-  insert into public.profiles (id, full_name, email, username, avatar_url, push_token)
+  insert into public.profiles (id, full_name, email)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)),
+    coalesce(
+      nullif(new.raw_user_meta_data->>'name', ''),
+      nullif(split_part(new.email, '@', 1), ''),
+      'user'
+    ),
     new.email
   );
   return new;
@@ -730,7 +737,11 @@ security definer set search_path = public
 as $$
 begin
   update public.profiles
-  set full_name = new.raw_user_meta_data->>'name',
+  set full_name = coalesce(
+        nullif(new.raw_user_meta_data->>'name', ''),
+        nullif(split_part(new.email, '@', 1), ''),
+        'user'
+      ),
       email = new.email
   where id = new.id;
   return new;
@@ -743,13 +754,22 @@ create trigger on_auth_user_updated
 
 -- ============================================================================
 -- STEP 16: Post Media Cleanup Triggers
--- ============================================================================
+-- NOTE: direct `delete from storage.objects` is rejected by Supabase at
+-- runtime, so cleanup goes through delete_storage_object() (HTTP, safe
+-- no-op when no service_role key is configured).
 create or replace function public.handle_delete_post_media()
-returns trigger as $$
-BEGIN
-  DELETE FROM storage.objects WHERE bucket_id = 'posts' AND (storage.foldername(name))[1] = OLD.id::text;
-  RETURN OLD;
-END;
+returns trigger security definer as $$
+declare
+  obj record;
+begin
+  for obj in
+    select name from storage.objects
+    where bucket_id = 'posts' and (storage.foldername(name))[1] = OLD.id::text
+  loop
+    perform public.delete_storage_object('posts', obj.name);
+  end loop;
+  return OLD;
+end;
 $$ language plpgsql;
 
 create trigger on_post_deleted
@@ -757,9 +777,15 @@ create trigger on_post_deleted
   execute function handle_delete_post_media();
 
 create or replace function clear_posts_objects()
-returns trigger as $$
+returns trigger security definer as $$
+declare
+  obj record;
 begin
-  delete from storage.objects where bucket_id = 'posts';
+  for obj in
+    select name from storage.objects where bucket_id = 'posts'
+  loop
+    perform public.delete_storage_object('posts', obj.name);
+  end loop;
   return null;
 end;
 $$ language plpgsql;
@@ -772,11 +798,18 @@ create trigger clear_posts_trigger
 -- STEP 17: Story Media Cleanup Triggers
 -- ============================================================================
 create or replace function public.handle_delete_story_media()
-returns trigger as $$
-BEGIN
-  DELETE FROM storage.objects WHERE bucket_id = 'stories' AND (storage.foldername(name))[1] = OLD.id::text;
-  RETURN OLD;
-END;
+returns trigger security definer as $$
+declare
+  obj record;
+begin
+  for obj in
+    select name from storage.objects
+    where bucket_id = 'stories' and (storage.foldername(name))[1] = OLD.id::text
+  loop
+    perform public.delete_storage_object('stories', obj.name);
+  end loop;
+  return OLD;
+end;
 $$ language plpgsql;
 
 create trigger on_story_deleted
@@ -784,9 +817,15 @@ create trigger on_story_deleted
   execute function handle_delete_story_media();
 
 create or replace function clear_stories_objects()
-returns trigger as $$
+returns trigger security definer as $$
+declare
+  obj record;
 begin
-  delete from storage.objects where bucket_id = 'stories';
+  for obj in
+    select name from storage.objects where bucket_id = 'stories'
+  loop
+    perform public.delete_storage_object('stories', obj.name);
+  end loop;
   return null;
 end;
 $$ language plpgsql;
