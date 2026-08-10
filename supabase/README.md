@@ -34,6 +34,12 @@ What it creates:
   exist or signup fails with "Database error saving new user"
 - Media cleanup triggers, performance indexes, PowerSync publication
 
+> **Optional — avatar cleanup:** in `complete_schema.sql` the `delete_storage_object`
+> function has `service_role_key text := '';`. Leave it empty and avatar cleanup is
+> simply off (app works normally). To enable it, paste your `service_role` key between
+> the quotes before running — from Supabase Dashboard → Settings → API.
+> Never commit that key to a public repository.
+
 ## 3. Give yourself admin access
 
 Sign up once in the app (your profile row is created automatically by the trigger),

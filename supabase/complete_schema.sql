@@ -616,11 +616,18 @@ language 'plpgsql'
 security definer
 as $$
 declare
-  project_url text := '<PROJECT_URL>';
-  service_role_key text := '<SERVICE_ROLE_KEY>';
+  project_url text := 'https://ghvgpkxehccdwgxmojrt.supabase.co';
+  -- Auto avatar cleanup: paste your service_role key here before running
+  -- (Supabase Dashboard -> Settings -> API). Keep it empty to disable
+  -- cleanup. Never commit the key to a public repo.
+  service_role_key text := '';
   delete_object text := reverse(split_part(reverse(object), '/', 1));
   url text := project_url||'/storage/v1/object/'||bucket||'/'||delete_object;
 begin
+  if service_role_key = '' then
+    select into status, content 0, 'avatar cleanup disabled (no service_role key configured)';
+    return;
+  end if;
   select
     into status, content
          result.status::int, result.content::text
