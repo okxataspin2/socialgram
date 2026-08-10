@@ -9,12 +9,9 @@ import 'package:shared/shared.dart';
 class ForgotButtonSendEmailButton extends StatelessWidget {
   const ForgotButtonSendEmailButton({super.key});
 
-  void _onPressed(BuildContext context) =>
-      context.read<ForgotPasswordCubit>().onSubmit(
-        onSuccess: () => context.read<ManagePasswordCubit>().changeScreen(
-          showForgotPassword: false,
-        ),
-      );
+  void _onPressed(BuildContext context) {
+    context.read<ForgotPasswordCubit>().onSubmit();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,14 +40,28 @@ class ForgotButtonSendEmailButton extends StatelessWidget {
               ),
             ),
     );
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        minWidth: switch (context.screenWidth) {
-          > 600 => context.screenWidth * .6,
-          _ => context.screenWidth,
-        },
+    return BlocListener<ForgotPasswordCubit, ForgotPasswordState>(
+      listenWhen: (previous, current) => current.status.isSuccess,
+      listener: (context, state) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(
+                context.l10n.verificationTokenSentText(state.email.value),
+              ),
+            ),
+          );
+      },
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minWidth: switch (context.screenWidth) {
+            > 600 => context.screenWidth * .6,
+            _ => context.screenWidth,
+          },
+        ),
+        child: child,
       ),
-      child: child,
     );
   }
 }

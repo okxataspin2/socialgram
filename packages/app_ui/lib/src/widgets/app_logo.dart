@@ -2,10 +2,10 @@ import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 
 /// {@template app_logo}
-/// The Application logo that display large Instagram text in a svg format.
+/// The application logo: camera glyph and the "SocialGram" wordmark.
 /// {@endtemplate}
 class AppLogo extends StatelessWidget {
-  /// {@macro app_log}
+  /// {@macro app_logo}
   const AppLogo({
     this.fit = BoxFit.contain,
     super.key,
@@ -28,14 +28,27 @@ class AppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Assets.images.instagramTextLogo.svg(
-      fit: fit,
-      width: width ?? 50,
-      height: height ?? 50,
-      colorFilter: ColorFilter.mode(
-        color ?? context.adaptiveColor,
-        BlendMode.srcIn,
-      ),
+    final resolvedColor = color ?? context.adaptiveColor;
+    final resolvedHeight = height ?? 50;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.camera_alt_rounded,
+          color: resolvedColor,
+          size: resolvedHeight * 0.62,
+        ),
+        const SizedBox(width: AppSpacing.xs),
+        Text(
+          'SocialGram',
+          style: context.titleLarge?.copyWith(
+            color: resolvedColor,
+            fontWeight: AppFontWeight.bold,
+            fontStyle: FontStyle.italic,
+            letterSpacing: -0.5,
+          ),
+        ),
+      ],
     );
   }
 }

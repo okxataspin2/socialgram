@@ -38,15 +38,25 @@ class PromoFloatingAction extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
         onTap: () => launchUrl(Uri.parse(url)),
         child: ListTile(
-          leading: ImageAttachmentThumbnail(
-            resizeHeight: 126,
-            image: Attachment(
-              imageUrl:
-                  'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/600px-Instagram_icon.png',
-            ),
-            width: 42,
-            borderRadius: 2,
-          ),
+          leading: promoImageUrl.isNotEmpty
+              ? ImageAttachmentThumbnail(
+                  resizeHeight: 126,
+                  image: Attachment(imageUrl: promoImageUrl),
+                  width: 42,
+                  borderRadius: 2,
+                )
+              : Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: AppColors.blue,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  child: const Icon(
+                    Icons.public_rounded,
+                    color: Colors.white,
+                  ),
+                ),
           horizontalTitleGap: AppSpacing.sm,
           title: Text(
             title,

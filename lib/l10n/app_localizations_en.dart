@@ -531,14 +531,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String verificationTokenSentText(String email) {
-    return 'Verification token sent to $email';
+    return "Password reset link sent to $email. If you don't see it, check your spam folder.";
   }
 
   @override
   String get emailText => 'Email';
 
   @override
-  String get otpText => 'Reset token';
+  String get otpText => 'Recovery code';
 
   @override
   String get changePasswordText => 'Change password';

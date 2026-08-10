@@ -358,7 +358,7 @@
   "nameText": "Name",
   "usernameText": "Username",
   "forgotPasswordEmailConfirmationText": "Email verification",
-  "verificationTokenSentText": "Verification token sent to {email}",
+  "verificationTokenSentText": "Password reset link sent to {email}. If you don\\'t see it, check your spam folder.",
   "@verificationTokenSentText": {
     "placeholders": {
       "email": {
@@ -368,7 +368,7 @@
     }
   },
   "emailText": "Email",
-  "otpText": "Reset token",
+  "otpText": "Recovery code",
   "changePasswordText": "Change password",
   "passwordText": "Password",
   "newPasswordText": "New password",

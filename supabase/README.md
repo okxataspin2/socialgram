@@ -87,3 +87,6 @@ schema is what `POWERSYNC_URL` consumes for offline sync.
 | `relation does not exist` | Old partial setup → re-run `complete_schema.sql` (STEP 0 wipes it) |
 | `column users.app_metadata does not exist` | Use `raw_app_meta_data` (see Step 3) |
 | Login works, feed empty | PowerSync URL missing/invalid → fix `POWERSYNC_URL` + run `dart run powersync:setup_web` for web |
+| "Password reset link sent" but no email arrives | Check **Authentication → Providers → Email** is enabled (default), set **Authentication → URL Configuration → Site URL** to your deployed app URL, and configure **SMTP** (Authentication → Emails → SMTP Settings) — without custom SMTP, Supabase's shared sender can be slow or land in Spam (also check the spam folder) |
+
+> **Why emails can be slow/missing:** Supabase projects without a custom SMTP use Supabase's shared no-reply sender. For reliable delivery set up your own SMTP (Gmail app password, Resend, etc.) in `Authentication → Emails → SMTP Settings`.

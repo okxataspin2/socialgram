@@ -540,14 +540,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String verificationTokenSentText(String email) {
-    return 'Код подтверждения отправлени на почту $email';
+    return 'Ссылка для сброса пароля отправлена на $email. Если письмо не пришло — проверьте папку «Спам».';
   }
 
   @override
   String get emailText => 'Почта';
 
   @override
-  String get otpText => 'Код';
+  String get otpText => 'Код подтверждения';
 
   @override
   String get changePasswordText => 'Поменять пароль';

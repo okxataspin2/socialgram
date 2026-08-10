@@ -326,7 +326,7 @@
   "nameText": "Имя",
   "usernameText": "Имя пользователя",
   "forgotPasswordEmailConfirmationText": "Подтверждение учётной записи",
-  "verificationTokenSentText": "Код подтверждения отправлени на почту {email}",
+  "verificationTokenSentText": "Ссылка для сброса пароля отправлена на {email}. Если письмо не пришло — проверьте папку «Спам».",
   "@verificationTokenSentText": {
     "placeholders": {
       "email": {
@@ -336,7 +336,7 @@
     }
   },
   "emailText": "Почта",
-  "otpText": "Код",
+  "otpText": "Код подтверждения",
   "changePasswordText": "Поменять пароль",
   "passwordText": "Пароль",
   "newPasswordText": "Новый пароль",
