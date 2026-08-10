@@ -4,6 +4,7 @@ export 'app_constrained_scroll_view.dart';
 export 'app_counter_number.dart';
 export 'app_divider.dart';
 export 'app_loading_progress.dart';
+export 'app_boot_gate.dart';
 export 'app_logo.dart';
 export 'app_scaffold.dart';
 export 'app_snackbar.dart';

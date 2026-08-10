@@ -1,7 +1,7 @@
 {
     "name": "SocialGram",
     "short_name": "SocialGram",
-    "description": "SocialGram - offline-first Instagram clone",
+    "description": "SocialGram - offline-first social app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",

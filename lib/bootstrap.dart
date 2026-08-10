@@ -51,46 +51,73 @@ Future<void> bootstrap(
 
   Bloc.observer = const AppBlocObserver();
 
+  final bootErrors = <String>[];
+  SharedPreferences? sharedPreferences;
+  FirebaseRemoteConfigRepository? remoteConfigRepository;
+
   await runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
-      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+      await _guard('Firebase', bootErrors, () async {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+      });
 
-      HydratedBloc.storage = await HydratedStorage.build(
-        storageDirectory: kIsWeb
-            ? HydratedStorageDirectory.web
-            : HydratedStorageDirectory((await getTemporaryDirectory()).path),
-      );
+      await _guard('Local storage', bootErrors, () async {
+        HydratedBloc.storage = await HydratedStorage.build(
+          storageDirectory: kIsWeb
+              ? HydratedStorageDirectory.web
+              : HydratedStorageDirectory((await getTemporaryDirectory()).path),
+        );
+      });
 
       final powerSyncRepository = PowerSyncRepository(env: appFlavor.getEnv);
-      await powerSyncRepository.initialize();
+      await _guard('Offline database', bootErrors, () async {
+        await powerSyncRepository
+            .initialize()
+            .timeout(const Duration(seconds: 30));
+      });
 
-      ZegoVideoService.configure(
-        appId: int.tryParse(appFlavor.getEnv(Env.zegoAppId)) ?? 0,
-        appSign: appFlavor.getEnv(Env.zegoAppSign),
-      );
+      await _guard('Zegocloud calls', bootErrors, () async {
+        ZegoVideoService.configure(
+          appId: int.tryParse(appFlavor.getEnv(Env.zegoAppId)) ?? 0,
+          appSign: appFlavor.getEnv(Env.zegoAppSign),
+        );
+      });
 
       final firebaseMessaging = FirebaseMessaging.instance;
       FirebaseMessaging.onBackgroundMessage(
         _firebaseMessagingBackgroundHandler,
       );
 
-      final sharedPreferences = await SharedPreferences.getInstance();
+      await _guard('Preferences', bootErrors, () async {
+        sharedPreferences = await SharedPreferences.getInstance();
+      });
+      sharedPreferences ??= await SharedPreferences.getInstance();
 
-      final firebaseRemoteConfig = FirebaseRemoteConfig.instance;
-      final firebaseRemoteConfigRepository = FirebaseRemoteConfigRepository(
-        firebaseRemoteConfig: firebaseRemoteConfig,
-      );
+      await _guard('Remote config', bootErrors, () async {
+        final firebaseRemoteConfig = FirebaseRemoteConfig.instance;
+        remoteConfigRepository = FirebaseRemoteConfigRepository(
+          firebaseRemoteConfig: firebaseRemoteConfig,
+        );
+      });
 
       SystemUiOverlayTheme.setPortraitOrientation();
 
       runApp(
-        await builder(
-          powerSyncRepository,
-          firebaseMessaging,
-          sharedPreferences,
-          firebaseRemoteConfigRepository,
+        AppBootGate(
+          bootErrors: bootErrors,
+          child: await builder(
+            powerSyncRepository,
+            firebaseMessaging,
+            sharedPreferences!,
+            remoteConfigRepository ??
+                FirebaseRemoteConfigRepository(
+                  firebaseRemoteConfig: FirebaseRemoteConfig.instance,
+                ),
+          ),
         ),
       );
     },
@@ -98,4 +125,17 @@ Future<void> bootstrap(
       logE(error.toString(), stackTrace: stack);
     },
   );
+}
+
+Future<void> _guard(
+  String label,
+  List<String> bootErrors,
+  Future<void> Function() action,
+) async {
+  try {
+    await action();
+  } catch (error, stackTrace) {
+    logE('$label initialization failed', error: error, stackTrace: stackTrace);
+    bootErrors.add('$label: $error');
+  }
 }
