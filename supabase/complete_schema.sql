@@ -852,6 +852,26 @@ create index subscriptions_subscribed_to_id_idx on public.subscriptions (subscri
 create index posts_created_at_idx on public.posts (created_at desc);
 
 -- ============================================================================
+-- Admin stats: average likes per post (used by getPostsStats RPC call)
+-- ============================================================================
+create or replace function public.get_average_likes()
+returns numeric
+language sql
+stable
+as $$
+  select case
+    when (select count(*) from public.posts) = 0 then 0
+    else round(
+      (select count(*)::numeric from public.likes) /
+      (select count(*)::numeric from public.posts), 2
+    )
+  end;
+$$;
+
+grant execute on function public.get_average_likes() to authenticated;
+grant execute on function public.get_average_likes() to service_role;
+
+-- ============================================================================
 -- PowerSync Publication for Offline Sync
 -- ============================================================================
 create publication powersync for all tables;

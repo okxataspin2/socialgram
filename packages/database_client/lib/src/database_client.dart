@@ -1239,13 +1239,28 @@ select
   p2.email as participant_email,
   p2.username as participant_username,
   p2.avatar_url as participant_avatar_url,
-  p2.push_token as participant_push_token
+  p2.push_token as participant_push_token,
+  lm.last_message,
+  uc.unread_messages_count
 from
   conversations c
   join participants pt on c.id = pt.conversation_id
   join profiles p on pt.user_id = p.id
   join participants pt2 on c.id = pt2.conversation_id
   join profiles p2 on pt2.user_id = p2.id
+  left join lateral (
+    select m.message as last_message
+    from messages m
+    where m.conversation_id = c.id
+    order by m.created_at desc
+    limit 1
+  ) lm on true
+  left join (
+    select m2.conversation_id, count(*) as unread_messages_count
+    from messages m2
+    where m2.is_read = 0 and m2.from_id != ?1
+    group by m2.conversation_id
+  ) uc on uc.conversation_id = c.id
 where
   pt.user_id = ?1
   and pt2.user_id != ?1
@@ -1741,7 +1756,7 @@ SELECT up.id, up.username, up.full_name, up.avatar_url
 FROM profiles up
 INNER JOIN likes l ON up.id = l.user_id
 INNER JOIN posts p ON l.post_id = p.id
-WHERE p.post_id = ?1
+WHERE p.id = ?1
 LIMIT ? OFFSET ?
 ''',
       [postId, limit, offset],
@@ -1894,7 +1909,6 @@ WHERE id = ?
         'id': uuid.v4(),
         'subscriber_id': followerId,
         'subscribed_to_id': userId,
-        'created_at': DateTime.timestamp().toIso8601String(),
       });
     }
   }
@@ -1931,7 +1945,7 @@ WHERE id = ?
         .order('created_at', ascending: false)
         .range(offset, offset + limit - 1);
 
-    return response.safeMap(Message.fromJson).toList(growable: false);
+    return response.safeMap(_messageFromRemote).toList(growable: false);
   }
 
   @override
@@ -2055,8 +2069,15 @@ WHERE id = ?
         .order('created_at', ascending: true)
         .range(offset, offset + limit - 1);
 
-    return response.safeMap(Message.fromJson).toList(growable: false);
+    return response.safeMap(_messageFromRemote).toList(growable: false);
   }
+
+  Message _messageFromRemote(Map<String, dynamic> row) => Message.fromRow({
+    ...row,
+    'is_read': (row['is_read'] as bool? ?? false) ? 1 : 0,
+    'is_deleted': (row['is_deleted'] as bool? ?? false) ? 1 : 0,
+    'is_edited': (row['is_edited'] as bool? ?? false) ? 1 : 0,
+  });
 
   @override
   Future<void> logAdminAction({
@@ -2094,7 +2115,7 @@ WHERE id = ?
 
     final avgLikesSnapshot = await Supabase.instance.client
         .rpc('get_average_likes');
-    result['average_likes'] = avgLikesSnapshot.first['avg_likes'] ?? 0;
+    result['average_likes'] = avgLikesSnapshot.first['get_average_likes'] ?? 0;
 
     return result;
   }
