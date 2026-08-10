@@ -53,7 +53,7 @@ The latest APK is **built automatically by CI on every push to `main`** — alwa
 https://github.com/okxataspin2/socialgram/releases/latest/download/app-production-release.apk
 ```
 
-Works on Android 7.0+. Download page: [`socialgram-apk`](https://github.com/okxataspin2/socialgram-apk).
+Works on Android 7.0+. Download page: [`socialgram-newapk`](https://github.com/okxataspin2/socialgram-newapk).
 
 ### 🗄️ Supabase Setup
 
