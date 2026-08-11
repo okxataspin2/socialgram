@@ -28,14 +28,28 @@ class SupabaseAuthenticationClient implements AuthenticationClient {
   /// the authentication state changes.
   ///
   /// Emits [AuthenticationUser.anonymous] if the user is not authenticated.
+  ///
+  /// The current session (or [AuthenticationUser.anonymous]) is emitted
+  /// immediately on listen so callers like `user.first` never hang waiting
+  /// for a future auth event.
   @override
   Stream<AuthenticationUser> get user {
-    return _powerSyncRepository.authStateChanges().map((state) {
-      final supabaseUser = state.session?.user;
-      return supabaseUser == null
-          ? AuthenticationUser.anonymous
-          : supabaseUser.toUser;
+    return Stream.multi((controller) {
+      final currentSession = supabase.Supabase.instance.client.auth.currentSession;
+      controller.add(_userFromSession(currentSession?.user));
+
+      final subscription = _powerSyncRepository.authStateChanges().listen(
+        (state) => controller.add(_userFromSession(state.session?.user)),
+        onError: controller.addError,
+      );
+      controller.onCancel = subscription.cancel;
     });
+  }
+
+  AuthenticationUser _userFromSession(supabase.User? supabaseUser) {
+    return supabaseUser == null
+        ? AuthenticationUser.anonymous
+        : supabaseUser.toUser;
   }
 
   @override
