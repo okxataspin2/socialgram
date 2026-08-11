@@ -156,3 +156,4 @@ app.*.map.json
 
 # secret keys - never commit
 keys-apis/
+supabase/.temp/
