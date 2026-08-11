@@ -153,3 +153,6 @@ app.*.map.json
 !.idea/dictionaries/
 !.idea/runConfigurations/
 .qodo
+
+# secret keys - never commit
+keys-apis/
