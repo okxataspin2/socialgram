@@ -87,10 +87,14 @@ Future<void> bootstrap(
         );
       });
 
-      final firebaseMessaging = FirebaseMessaging.instance;
-      FirebaseMessaging.onBackgroundMessage(
-        _firebaseMessagingBackgroundHandler,
-      );
+      FirebaseMessaging? firebaseMessaging;
+      await _guard('Push notifications', bootErrors, () async {
+        firebaseMessaging = FirebaseMessaging.instance;
+        FirebaseMessaging.onBackgroundMessage(
+          _firebaseMessagingBackgroundHandler,
+        );
+      });
+      firebaseMessaging ??= FirebaseMessaging.instance;
 
       await _guard('Preferences', bootErrors, () async {
         sharedPreferences = await SharedPreferences.getInstance();
@@ -106,18 +110,27 @@ Future<void> bootstrap(
 
       SystemUiOverlayTheme.setPortraitOrientation();
 
+      Widget appWidget;
+      try {
+        appWidget = await builder(
+          powerSyncRepository,
+          firebaseMessaging,
+          sharedPreferences!,
+          remoteConfigRepository ??
+              FirebaseRemoteConfigRepository(
+                firebaseRemoteConfig: FirebaseRemoteConfig.instance,
+              ),
+        );
+      } catch (error, stackTrace) {
+        logE('App builder failed', error: error, stackTrace: stackTrace);
+        bootErrors.add('App: $error');
+        appWidget = const SizedBox.shrink();
+      }
+
       runApp(
         AppBootGate(
           bootErrors: bootErrors,
-          child: await builder(
-            powerSyncRepository,
-            firebaseMessaging,
-            sharedPreferences!,
-            remoteConfigRepository ??
-                FirebaseRemoteConfigRepository(
-                  firebaseRemoteConfig: FirebaseRemoteConfig.instance,
-                ),
-          ),
+          child: appWidget,
         ),
       );
     },

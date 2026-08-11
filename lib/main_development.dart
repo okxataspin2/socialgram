@@ -80,7 +80,12 @@ void main() {
       searchRepository: searchRepository,
       notificationsRepository: notificationsRepository,
       firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
-      user: await userRepository.user.first,
+      user: await userRepository.user
+          .timeout(
+            const Duration(seconds: 15),
+            onTimeout: (sink) => sink.add(User.anonymous),
+          )
+          .first,
     );
   });
 }

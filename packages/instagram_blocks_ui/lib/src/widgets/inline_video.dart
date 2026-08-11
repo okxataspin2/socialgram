@@ -53,7 +53,7 @@ class _InlineVideoState extends State<InlineVideo>
         videoSettings.videoFile,
         videoPlayerOptions: videoSettings.videoPlayerOptions,
       ).then((controller) {
-        _controller = controller;
+        _controller = controller as VideoPlayerController;
         _controller.initialize().then((_) async {
           safeSetState(() {});
           _togglePlayer();
