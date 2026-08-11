@@ -94,7 +94,7 @@ Future<void> bootstrap(
           _firebaseMessagingBackgroundHandler,
         );
       });
-      firebaseMessaging ??= FirebaseMessaging.instance;
+      final messaging = firebaseMessaging ?? FirebaseMessaging.instance;
 
       await _guard('Preferences', bootErrors, () async {
         sharedPreferences = await SharedPreferences.getInstance();
@@ -114,7 +114,7 @@ Future<void> bootstrap(
       try {
         appWidget = await builder(
           powerSyncRepository,
-          firebaseMessaging,
+          messaging,
           sharedPreferences!,
           remoteConfigRepository ??
               FirebaseRemoteConfigRepository(
