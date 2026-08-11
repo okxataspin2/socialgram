@@ -104,12 +104,16 @@ class $AssetsImagesGen {
   AssetGenImage get profilePhoto =>
       const AssetGenImage('assets/images/profile_photo.png');
 
+  /// File path: assets/images/logo.png
+  AssetGenImage get logo => const AssetGenImage('assets/images/logo.png');
+
   /// List of all assets
   List<dynamic> get values => [
     chatBackgroundLightMask,
     chatBackgroundDarkMask,
     chatBackgroundLightOverlay,
     instagramTextLogo,
+    logo,
     placeholder,
     profilePhoto,
   ];

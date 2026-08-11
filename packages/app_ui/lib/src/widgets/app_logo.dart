@@ -33,10 +33,10 @@ class AppLogo extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          Icons.camera_alt_rounded,
-          color: resolvedColor,
-          size: resolvedHeight * 0.62,
+        Image.asset(
+          Assets.images.logo.path,
+          height: resolvedHeight * 0.9,
+          fit: fit,
         ),
         const SizedBox(width: AppSpacing.xs),
         Text(
